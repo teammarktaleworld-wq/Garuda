@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+:root {
+  --blue: #0055A5;
+  --blue-light: #1E7FE8;
+  --navy: #07111F;
+  --black: #080B10;
+  --gray: #F5F7F9;
+  --gray-mid: #E8ECF0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #080B10;
+  color: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Hide scrollbar but keep scroll */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #07111F;
+}
+::-webkit-scrollbar-thumb {
+  background: #0055A5;
+  border-radius: 3px;
+}
+
+.font-display {
+  font-family: 'Syne', 'Georgia', serif;
+  font-weight: 800;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 85, 165, 0.4); }
+  50% { box-shadow: 0 0 0 20px rgba(0, 85, 165, 0); }
+}
+
+@keyframes counter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.float-animation {
+  animation: float 4s ease-in-out infinite;
+}
+
+.glow-btn {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Typography scale */
+.text-display {
+  font-size: clamp(3rem, 8vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+
+.text-hero-sub {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  line-height: 1.6;
+}
+
+/* Card hover effects */
+.vehicle-card {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.vehicle-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 30px 60px rgba(0, 85, 165, 0.2);
+}
+
+.vehicle-card:hover .car-img {
+  transform: scale(1.05);
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-dark {
+  background: rgba(7, 17, 31, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #1E7FE8, #0055A5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Section transitions */
+.section-dark {
+  background: #080B10;
+}
+
+.section-navy {
+  background: #07111F;
+}
+
+.section-light {
+  background: #F5F7F9;
+}
+
+/* Particle canvas */
+#particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .text-display {
+    font-size: clamp(2.5rem, 10vw, 4rem);
+  }
+}
