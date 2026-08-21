@@ -214,19 +214,19 @@ export default function Home() {
 
       <About />
       <Testimonials />
-      <FinanceCalculator />
+      {/* <FinanceCalculator /> */}
 
       <div id="showrooms">
         <Showroom />
       </div>
 
-      <Gallery />
+      {/* <Gallery /> */}
 
       <div id="contact">
         <Contact />
       </div>
 
-      <FinalCTA />
+      {/* <FinalCTA /> */}
       <Footer />
       <GarudChatbot />
     </main>
