@@ -1,7 +1,245 @@
+// "use client";
+
+// import { MapPin, Phone, Mail } from "lucide-react";
+// import { motion } from "framer-motion";
+
+// const models = ["Harrier", "Safari", "Nexon", "Punch", "Curvv", "Sierra", "Tiago", "Altroz"];
+
+// const navLinks = [
+//   { label: "New Cars", href: "#cars" },
+//   { label: "Offers", href: "#offers" },
+//   { label: "Test Drive", href: "#testdrive" },
+//   { label: "About Us", href: "#about" },
+//   { label: "Gallery", href: "#gallery" },
+//   { label: "Contact", href: "#contact" },
+// ];
+
+// // Shortened addresses to easily fit within two lines
+// const locations = [
+//   {
+//     name: "Palam Showroom",
+//     address: "Garg Plaza, RZ A70, Dabri–Palam Rd, New Delhi 110045",
+//     phone: "9217371204",
+//     maps: "https://maps.google.com/?q=Garg+Plaza+RZ+A70+Dabri+Palam+Rd+Main+Shiv+Market+Palam+New+Delhi+110045",
+//   },
+//   {
+//     name: "Narela Showroom",
+//     address: "Khasra No 42/12, Narela, New Delhi 110040",
+//     phone: "9311083011",
+//     maps: "https://maps.google.com/?q=Khasra+No+42%2F12+Narela+New+Delhi+110040",
+//   },
+//   {
+//     name: "Najafgarh Showroom",
+//     address: "Plot No. 8–11, Najafgarh Rd, Near Sai Baba Mandir, New Delhi 110043",
+//     phone: "9217371207",
+//     maps: "https://maps.google.com/?q=Plot+No+8+to+11+Najafgarh+Rd+Near+Sai+Baba+Mandir+Najafgarh+New+Delhi+110043",
+//   },
+//   {
+//     name: "Dwarka Service Centre",
+//     address: "Shanti Garden, Matiala Ind. Area, Dwarka, New Delhi 110059",
+//     phone: "9319198306",
+//     maps: "https://maps.google.com/?q=Shanti+Garden+Matiala+Industrial+Area+Dwarka+New+Delhi+110059",
+//   },
+//   {
+//     name: "Najafgarh Service Centre",
+//     address: "Plot No. 8–11, Main Najafgarh Rd, New Delhi 110043",
+//     phone: "9319198306",
+//     maps: "https://maps.google.com/?q=Plot+No+8+to+11+Main+Najafgarh+Road+Near+Sai+Baba+Mandir+Najafgarh+New+Delhi+110043",
+//   },
+// ];
+
+// /* Framer Motion Variants */
+// const containerVariants = {
+//   hidden: { opacity: 0 },
+//   visible: {
+//     opacity: 1,
+//     transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+//   },
+// };
+
+// const itemVariants = {
+//   hidden: { opacity: 0, y: 20 },
+//   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+// };
+
+// export default function Footer() {
+//   return (
+//     <footer className="bg-[#07111F] border-t border-white/5 overflow-hidden">
+//       <motion.div 
+//         variants={containerVariants}
+//         initial="hidden"
+//         whileInView="visible"
+//         viewport={{ once: true, margin: "-50px" }}
+//         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
+//       >
+//         {/* Main Grid: 1 col on mobile, 2 on tablet, 12-col span on desktop */}
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 mb-16">
+          
+//           {/* 1. Brand Section */}
+//           <motion.div variants={itemVariants} className="lg:col-span-4 pr-0 lg:pr-6">
+//             <div className="flex items-center gap-3 mb-6">
+//               {/* Fix: Replaced strict background block with a responsive container to show full logo */}
+//               <div className="h-10 w-32 sm:h-12 sm:w-40 flex items-center justify-start flex-shrink-0">
+//                 <img 
+//                   src="/images/logo.jpg" 
+//                   alt="Garud Tata Logo" 
+//                   className="w-full h-full object-contain object-left"
+//                 />
+//               </div>
+//               <div className="border-l border-white/20 pl-3">
+//                 <div className="font-bold text-white text-base tracking-wide" style={{ fontFamily: "'Syne', sans-serif" }}>GARUD TATA</div>
+//                 <div className="text-[#1E7FE8] text-[10px] font-medium tracking-wider uppercase">Authorized Dealer</div>
+//               </div>
+//             </div>
+            
+//             <p className="text-white/40 text-sm leading-relaxed mb-6 max-w-sm">
+//               Your trusted authorized Tata Motors dealership across Delhi NCR. Professional guidance, complete EV support, and customer-first service.
+//             </p>
+            
+//             <div className="flex gap-3 mb-8">
+//               {["IG", "FB", "YT"].map((label, i) => (
+//                 <motion.a 
+//                   key={i} 
+//                   href="#" 
+//                   whileHover={{ scale: 1.1, y: -2 }}
+//                   whileTap={{ scale: 0.95 }}
+//                   className="w-9 h-9 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center text-white/50 hover:bg-[#0055A5] hover:text-white hover:border-[#0055A5] transition-colors text-xs font-bold"
+//                 >
+//                   {label}
+//                 </motion.a>
+//               ))}
+//             </div>
+
+//             <ul className="space-y-4">
+//               <li className="flex items-center gap-3 group cursor-pointer">
+//                 <div className="w-8 h-8 rounded-full bg-white/[0.03] flex items-center justify-center group-hover:bg-[#1E7FE8]/20 transition-colors">
+//                   <Phone size={14} className="text-[#1E7FE8]" />
+//                 </div>
+//                 <a href="tel:+919876543210" className="text-white/60 text-sm group-hover:text-white font-medium transition-colors">
+//                   Sales: +91 987 6543210
+//                 </a>
+//               </li>
+//               <li className="flex items-center gap-3 group cursor-pointer">
+//                 <div className="w-8 h-8 rounded-full bg-white/[0.03] flex items-center justify-center group-hover:bg-[#1E7FE8]/20 transition-colors">
+//                   <Mail size={14} className="text-[#1E7FE8]" />
+//                 </div>
+//                 {/* Fix: Changed email */}
+//                 <a href="mailto:sales@garudtata.com" className="text-white/60 text-sm group-hover:text-white transition-colors">
+//                   sales@garudtata.com
+//                 </a>
+//               </li>
+//             </ul>
+//           </motion.div>
+
+//           {/* 2. Navigation */}
+//           <motion.div variants={itemVariants} className="lg:col-span-2">
+//             <h4 className="text-white font-semibold text-sm mb-6 uppercase tracking-wider">Navigate</h4>
+//             <ul className="space-y-3.5">
+//               {navLinks.map((link) => (
+//                 <li key={link.label}>
+//                   <a href={link.href} className="text-white/40 text-sm hover:text-[#1E7FE8] transition-colors flex items-center gap-2 group">
+//                     <span className="w-1.5 h-1.5 rounded-full bg-[#1E7FE8]/0 group-hover:bg-[#1E7FE8] transition-all" />
+//                     <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
+//                   </a>
+//                 </li>
+//               ))}
+//             </ul>
+//           </motion.div>
+
+//           {/* 3. Models */}
+//           <motion.div variants={itemVariants} className="lg:col-span-2">
+//             <h4 className="text-white font-semibold text-sm mb-6 uppercase tracking-wider">Models</h4>
+//             <ul className="space-y-3.5">
+//               {models.map((m) => (
+//                 <li key={m}>
+//                   <a href="#cars" className="text-white/40 text-sm hover:text-[#1E7FE8] transition-colors flex items-center gap-2 group">
+//                     <span className="w-1.5 h-1.5 rounded-full bg-[#1E7FE8]/0 group-hover:bg-[#1E7FE8] transition-all" />
+//                     <span className="group-hover:translate-x-1 transition-transform">Tata {m}</span>
+//                   </a>
+//                 </li>
+//               ))}
+//             </ul>
+//           </motion.div>
+
+//           {/* 4. Locations */}
+//           <motion.div variants={itemVariants} className="lg:col-span-4">
+//             <h4 className="text-white font-semibold text-sm mb-6 uppercase tracking-wider">Our Locations</h4>
+//             <ul className="space-y-5">
+//               {locations.map((loc) => (
+//                 <li key={loc.name}>
+//                   <a 
+//                     href={loc.maps} 
+//                     target="_blank" 
+//                     rel="noopener noreferrer" 
+//                     className="group block p-3 -mx-3 rounded-xl hover:bg-white/[0.02] transition-colors"
+//                   >
+//                     <div className="flex items-start gap-3">
+//                       <div className="mt-0.5 p-1.5 rounded-full bg-white/[0.03] group-hover:bg-[#1E7FE8]/10 transition-colors">
+//                         <MapPin size={15} className="text-[#1E7FE8] group-hover:-rotate-12 transition-transform" />
+//                       </div>
+//                       <div className="flex-1 min-w-0">
+//                         <div className="text-white/80 text-sm font-medium group-hover:text-white transition-colors mb-1">
+//                           {loc.name}
+//                         </div>
+//                         {/* Fix: Strict 2-line clamp */}
+//                         <div className="text-white/40 text-[13px] leading-relaxed group-hover:text-white/60 transition-colors line-clamp-2 pr-4">
+//                           {loc.address}
+//                         </div>
+//                         <div className="text-[#1E7FE8]/80 text-[12px] mt-1.5 font-medium group-hover:text-[#1E7FE8] transition-colors flex items-center gap-1.5">
+//                           <Phone size={11} /> +91 {loc.phone}
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </a>
+//                 </li>
+//               ))}
+//             </ul>
+//           </motion.div>
+//         </div>
+
+//         {/* Bottom Bar */}
+//         <motion.div 
+//           variants={itemVariants}
+//           className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4"
+//         >
+//           <p className="text-white/30 text-xs text-center md:text-left">
+//             © {new Date().getFullYear()} Garud Tata. All Rights Reserved.
+//           </p>
+//           <p className="text-white/20 text-xs text-center md:text-right max-w-lg">
+//             *Prices and specifications are indicative and subject to change. Please contact the showroom for the latest details.
+//           </p>
+//         </motion.div>
+//       </motion.div>
+//     </footer>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 "use client";
-import { MapPin, Phone, Mail, PlayCircle } from "lucide-react";
+
+import { MapPin, Phone, Mail } from "lucide-react";
+import { motion, type Variants } from "framer-motion";
 
 const models = ["Harrier", "Safari", "Nexon", "Punch", "Curvv", "Sierra", "Tiago", "Altroz"];
+
 const navLinks = [
   { label: "New Cars", href: "#cars" },
   { label: "Offers", href: "#offers" },
@@ -11,90 +249,202 @@ const navLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
+// Shortened addresses to easily fit within two lines
+const locations = [
+  {
+    name: "Palam Showroom",
+    address: "Garg Plaza, RZ A70, Dabri–Palam Rd, New Delhi 110045",
+    phone: "9217371204",
+    maps: "https://maps.google.com/?q=Garg+Plaza+RZ+A70+Dabri+Palam+Rd+Main+Shiv+Market+Palam+New+Delhi+110045",
+  },
+  {
+    name: "Narela Showroom",
+    address: "Khasra No 42/12, Narela, New Delhi 110040",
+    phone: "9311083011",
+    maps: "https://maps.google.com/?q=Khasra+No+42%2F12+Narela+New+Delhi+110040",
+  },
+  {
+    name: "Najafgarh Showroom",
+    address: "Plot No. 8–11, Najafgarh Rd, Near Sai Baba Mandir, New Delhi 110043",
+    phone: "9217371207",
+    maps: "https://maps.google.com/?q=Plot+No+8+to+11+Najafgarh+Rd+Near+Sai+Baba+Mandir+Najafgarh+New+Delhi+110043",
+  },
+  {
+    name: "Dwarka Service Centre",
+    address: "Shanti Garden, Matiala Ind. Area, Dwarka, New Delhi 110059",
+    phone: "9319198306",
+    maps: "https://maps.google.com/?q=Shanti+Garden+Matiala+Industrial+Area+Dwarka+New+Delhi+110059",
+  },
+  {
+    name: "Najafgarh Service Centre",
+    address: "Plot No. 8–11, Main Najafgarh Rd, New Delhi 110043",
+    phone: "9319198306",
+    maps: "https://maps.google.com/?q=Plot+No+8+to+11+Main+Najafgarh+Road+Near+Sai+Baba+Mandir+Najafgarh+New+Delhi+110043",
+  },
+];
+
+/* Framer Motion Variants */
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
 export default function Footer() {
   return (
-    <footer className="bg-[#07111F] border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
-          {/* Brand */}
-          <div className="col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-[#0055A5] flex items-center justify-center font-bold text-white text-lg">G</div>
-              <div>
-                <div className="font-bold text-white" style={{ fontFamily: "'Syne', sans-serif" }}>GARUD TATA</div>
-                <div className="text-[#1E7FE8] text-xs">Authorized Tata Dealer</div>
+    <footer className="bg-[#07111F] border-t border-white/5 overflow-hidden">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
+      >
+        {/* Main Grid: 1 col on mobile, 2 on tablet, 12-col span on desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 mb-16">
+          
+          {/* 1. Brand Section */}
+          <motion.div variants={itemVariants} className="lg:col-span-4 pr-0 lg:pr-6">
+            <div className="flex items-center gap-3 mb-6">
+              {/* Fix: Replaced strict background block with a responsive container to show full logo */}
+              <div className="h-10 w-32 sm:h-12 sm:w-40 flex items-center justify-start flex-shrink-0">
+                <img 
+                  src="/images/logo.jpg" 
+                  alt="Garud Tata Logo" 
+                  className="w-full h-full object-contain object-left"
+                />
+              </div>
+              <div className="border-l border-white/20 pl-3">
+                <div className="font-bold text-white text-base tracking-wide" style={{ fontFamily: "'Syne', sans-serif" }}>GARUD TATA</div>
+                <div className="text-[#1E7FE8] text-[10px] font-medium tracking-wider uppercase">Authorized Dealer</div>
               </div>
             </div>
-            <p className="text-white/30 text-sm leading-relaxed mb-5">
-              Your trusted authorized Tata Motors dealership in Palam, New Delhi. Professional guidance and customer-first service.
+            
+            <p className="text-white/40 text-sm leading-relaxed mb-6 max-w-sm">
+              Your trusted authorized Tata Motors dealership across Delhi NCR. Professional guidance, complete EV support, and customer-first service.
             </p>
-            <div className="flex gap-3">
+            
+            <div className="flex gap-3 mb-8">
               {["IG", "FB", "YT"].map((label, i) => (
-                <a key={i} href="#" className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:bg-[#0055A5] hover:text-white transition-all text-xs font-bold">
+                <motion.a 
+                  key={i} 
+                  href="#" 
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-9 h-9 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center text-white/50 hover:bg-[#0055A5] hover:text-white hover:border-[#0055A5] transition-colors text-xs font-bold"
+                >
                   {label}
-                </a>
+                </motion.a>
               ))}
             </div>
-          </div>
 
-          {/* Navigation */}
-          <div>
-            <h4 className="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Navigate</h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-4">
+              <li className="flex items-center gap-3 group cursor-pointer">
+                <div className="w-8 h-8 rounded-full bg-white/[0.03] flex items-center justify-center group-hover:bg-[#1E7FE8]/20 transition-colors">
+                  <Phone size={14} className="text-[#1E7FE8]" />
+                </div>
+                <a href="tel:+919876543210" className="text-white/60 text-sm group-hover:text-white font-medium transition-colors">
+                  Sales: +91 987 6543210
+                </a>
+              </li>
+              <li className="flex items-center gap-3 group cursor-pointer">
+                <div className="w-8 h-8 rounded-full bg-white/[0.03] flex items-center justify-center group-hover:bg-[#1E7FE8]/20 transition-colors">
+                  <Mail size={14} className="text-[#1E7FE8]" />
+                </div>
+                {/* Fix: Changed email */}
+                <a href="mailto:sales@garudtata.com" className="text-white/60 text-sm group-hover:text-white transition-colors">
+                  sales@garudtata.com
+                </a>
+              </li>
+            </ul>
+          </motion.div>
+
+          {/* 2. Navigation */}
+          <motion.div variants={itemVariants} className="lg:col-span-2">
+            <h4 className="text-white font-semibold text-sm mb-6 uppercase tracking-wider">Navigate</h4>
+            <ul className="space-y-3.5">
               {navLinks.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-white/40 text-sm hover:text-[#1E7FE8] transition-colors">
-                    {link.label}
+                  <a href={link.href} className="text-white/40 text-sm hover:text-[#1E7FE8] transition-colors flex items-center gap-2 group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#1E7FE8]/0 group-hover:bg-[#1E7FE8] transition-all" />
+                    <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
                   </a>
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
-          {/* Models */}
-          <div>
-            <h4 className="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Popular Models</h4>
-            <ul className="space-y-2.5">
+          {/* 3. Models */}
+          <motion.div variants={itemVariants} className="lg:col-span-2">
+            <h4 className="text-white font-semibold text-sm mb-6 uppercase tracking-wider">Models</h4>
+            <ul className="space-y-3.5">
               {models.map((m) => (
                 <li key={m}>
-                  <a href="#cars" className="text-white/40 text-sm hover:text-[#1E7FE8] transition-colors">
-                    Tata {m}
+                  <a href="#cars" className="text-white/40 text-sm hover:text-[#1E7FE8] transition-colors flex items-center gap-2 group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#1E7FE8]/0 group-hover:bg-[#1E7FE8] transition-all" />
+                    <span className="group-hover:translate-x-1 transition-transform">Tata {m}</span>
                   </a>
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Contact</h4>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2.5">
-                <Phone size={14} className="text-[#1E7FE8] mt-0.5 flex-none" />
-                <a href="tel:+91XXXXXXXXXX" className="text-white/40 text-sm hover:text-white transition-colors">+91 XXXX-XXXXXX</a>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <MapPin size={14} className="text-[#1E7FE8] mt-0.5 flex-none" />
-                <span className="text-white/40 text-sm leading-relaxed">Sales-Garg Plaza, RZ A70, Palam, Delhi – 110045</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <Mail size={14} className="text-[#1E7FE8] mt-0.5 flex-none" />
-                <a href="mailto:info@garudtata.com" className="text-white/40 text-sm hover:text-white transition-colors">info@garudtata.com</a>
-              </li>
+          {/* 4. Locations */}
+          <motion.div variants={itemVariants} className="lg:col-span-4">
+            <h4 className="text-white font-semibold text-sm mb-6 uppercase tracking-wider">Our Locations</h4>
+            <ul className="space-y-5">
+              {locations.map((loc) => (
+                <li key={loc.name}>
+                  <a 
+                    href={loc.maps} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="group block p-3 -mx-3 rounded-xl hover:bg-white/[0.02] transition-colors"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5 p-1.5 rounded-full bg-white/[0.03] group-hover:bg-[#1E7FE8]/10 transition-colors">
+                        <MapPin size={15} className="text-[#1E7FE8] group-hover:-rotate-12 transition-transform" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-white/80 text-sm font-medium group-hover:text-white transition-colors mb-1">
+                          {loc.name}
+                        </div>
+                        {/* Fix: Strict 2-line clamp */}
+                        <div className="text-white/40 text-[13px] leading-relaxed group-hover:text-white/60 transition-colors line-clamp-2 pr-4">
+                          {loc.address}
+                        </div>
+                        <div className="text-[#1E7FE8]/80 text-[12px] mt-1.5 font-medium group-hover:text-[#1E7FE8] transition-colors flex items-center gap-1.5">
+                          <Phone size={11} /> +91 {loc.phone}
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              ))}
             </ul>
-          </div>
+          </motion.div>
         </div>
 
-        {/* Bottom */}
-        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/20 text-xs">
-            © 2026 Garud Tata. All Rights Reserved. Authorized Tata Motors Dealer.
+        {/* Bottom Bar */}
+        <motion.div 
+          variants={itemVariants}
+          className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4"
+        >
+          <p className="text-white/30 text-xs text-center md:text-left">
+            © {new Date().getFullYear()} Garud Tata. All Rights Reserved.
           </p>
-          <p className="text-white/15 text-xs text-center sm:text-right max-w-sm">
-            *Prices are indicative and subject to change. Please contact showroom for latest pricing and offers.
+          <p className="text-white/20 text-xs text-center md:text-right max-w-lg">
+            *Prices and specifications are indicative and subject to change. Please contact the showroom for the latest details.
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </footer>
   );
 }
