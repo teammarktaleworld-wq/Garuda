@@ -172,7 +172,7 @@ export default function Home() {
       {/* ── Navbar ──────────────────────────────────────────────────────── */}
       <CampaignNavbar
         phone="+919876543210"
-        whatsappNumber="919876543210"
+    
         offerSectionId="offer-form"
         // logoSrc="/images/logo.png"
       />
