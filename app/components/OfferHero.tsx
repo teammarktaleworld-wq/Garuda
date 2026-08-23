@@ -676,27 +676,195 @@ function TrustStrip() {
 
 
 
+// "use client";
 
+// import { useRef, useState } from "react";
+// import { motion } from "framer-motion";
+// import { Phone, MessageCircle, ChevronDown } from "lucide-react";
 
+// interface OfferHeroProps {
+//   phone: string;
+//   whatsappNumber: string;
+//   offerSectionId: string;
+//   backgroundImage?: string;
+//   backgroundVideo?: string;
+//   vehicle?: string;
+//   offerValue?: string;
+//   headlineLine1?: string;
+//   headlineLine2?: string;
+// }
 
+// export default function OfferHero({
+//   phone,
+//   whatsappNumber,
+//   offerSectionId,
+//   backgroundImage,
+//   backgroundVideo,
+//   vehicle,
+//   offerValue,
+//   headlineLine1,
+//   headlineLine2,
+// }: OfferHeroProps) {
+//   const videoRef = useRef<HTMLVideoElement>(null);
+//   const [videoFailed, setVideoFailed] = useState(false);
 
+//   const scrollToOffers = () => {
+//     document
+//       .getElementById(offerSectionId)
+//       ?.scrollIntoView({ behavior: "smooth" });
+//   };
 
+//   const line1 =
+//     headlineLine1 ?? (vehicle ? "Drive Home Your" : "Exclusive Offers.");
 
+//   const line2 =
+//     headlineLine2 ?? (vehicle ? vehicle : "This Month Only.");
 
+//   const benefitText = offerValue
+//     ? `Benefits up to ${offerValue}`
+//     : "SPECIAL BENEFITS AVAILABLE";
 
+//   const whatsappMessage =
+//     "Hi, I am interested in Tata offers at Garud Tata";
 
+//   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+//     whatsappMessage
+//   )}`;
 
+//   return (
+//     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#050A12]">
+//       {/* Background video */}
+//       {backgroundVideo && !videoFailed && (
+//         <video
+//           ref={videoRef}
+//           src={backgroundVideo}
+//           autoPlay
+//           muted
+//           loop
+//           playsInline
+//           onError={() => setVideoFailed(true)}
+//           className="absolute inset-0 w-full h-full object-cover opacity-40"
+//         />
+//       )}
 
+//       {/* Fallback background image */}
+//       {backgroundImage && (videoFailed || !backgroundVideo) && (
+//         // eslint-disable-next-line @next/next/no-img-element
+//         <img
+//           src={backgroundImage}
+//           alt="Garud Tata offers"
+//           className="absolute inset-0 w-full h-full object-cover opacity-35"
+//         />
+//       )}
 
+//       {/* Gradient overlays */}
+//       <div className="absolute inset-0 bg-gradient-to-b from-[#050A12]/60 via-transparent to-[#050A12]/80 pointer-events-none" />
 
+//       <div className="absolute inset-0 bg-gradient-to-r from-[#050A12]/70 via-transparent to-[#050A12]/40 pointer-events-none" />
 
+//       {/* Blue glow */}
+//       <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#0055A5]/15 blur-[160px] pointer-events-none" />
 
+//       {/* Grid texture */}
+//       <div
+//         className="absolute inset-0 opacity-[0.015] pointer-events-none"
+//         style={{
+//           backgroundImage:
+//             "linear-gradient(rgba(255,255,255,0.7) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.7) 1px, transparent 1px)",
+//           backgroundSize: "72px 72px",
+//         }}
+//       />
 
+//       {/* Content */}
+//       <div className="relative z-10 w-full max-w-5xl mx-auto px-5 lg:px-12 text-center">
+//         {/* Offer badge */}
+//         <motion.div
+//           initial={{ opacity: 0, y: 10 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 0.5 }}
+//           className="inline-flex items-center gap-2 mb-6"
+//         >
+//           <span className="px-3 py-1.5 rounded-full bg-[#0055A5]/25 border border-[#0055A5]/40 text-[#7DB8F7] text-[10px] font-black tracking-[0.2em] uppercase">
+//             {benefitText}
+//           </span>
+//         </motion.div>
 
+//         {/* Headline */}
+//         <motion.h1
+//           initial={{ opacity: 0, y: 20 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 0.6, delay: 0.08 }}
+//           className="text-white font-extrabold tracking-[-0.025em] leading-[1.05] mb-4"
+//           style={{ fontSize: "clamp(2.8rem, 8vw, 5.5rem)" }}
+//         >
+//           {line1}
+//           <br />
+//           <span className="text-[#5BA3E8]">{line2}</span>
+//         </motion.h1>
 
+//         {/* Sub-copy */}
+//         <motion.p
+//           initial={{ opacity: 0, y: 16 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 0.55, delay: 0.16 }}
+//           className="text-white/45 text-[1rem] mb-10 max-w-xl mx-auto"
+//         >
+//           Garud Tata — Authorised Tata Motors Dealership · Delhi NCR
+//         </motion.p>
 
+//         {/* CTAs */}
+//         <motion.div
+//           initial={{ opacity: 0, y: 14 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 0.5, delay: 0.24 }}
+//           className="flex flex-wrap justify-center gap-3 mb-14"
+//         >
+//           {/* View Offers */}
+//           <button
+//             type="button"
+//             onClick={scrollToOffers}
+//             className="px-8 py-4 rounded-full bg-[#0055A5] hover:bg-[#1A70D4] text-white font-bold text-[13px] tracking-[0.07em] shadow-[0_8px_32px_rgba(0,85,165,0.45)] hover:-translate-y-0.5 transition-all duration-200 min-h-[52px]"
+//           >
+//             VIEW OFFERS
+//           </button>
 
+//           {/* Call */}
+//           <a
+//             href={`tel:${phone}`}
+//             className="flex items-center gap-2 px-8 py-4 rounded-full bg-white/[0.07] border border-white/[0.15] hover:border-white/30 hover:bg-white/[0.11] text-white font-medium text-[13px] tracking-[0.05em] transition-all duration-200 min-h-[52px]"
+//           >
+//             <Phone size={14} />
+//             {phone}
+//           </a>
 
+//           {/* WhatsApp */}
+//           <a
+//             href={whatsappUrl}
+//             target="_blank"
+//             rel="noopener noreferrer"
+//             className="flex items-center gap-2 px-8 py-4 rounded-full bg-emerald-600/20 border border-emerald-500/30 hover:bg-emerald-600/30 text-emerald-300 font-medium text-[13px] tracking-[0.05em] transition-all duration-200 min-h-[52px]"
+//           >
+//             <MessageCircle size={14} />
+//             WhatsApp
+//           </a>
+//         </motion.div>
 
+//         {/* Scroll nudge */}
+//         <motion.button
+//           type="button"
+//           initial={{ opacity: 0 }}
+//           animate={{ opacity: 1 }}
+//           transition={{ delay: 0.8, duration: 0.6 }}
+//           onClick={scrollToOffers}
+//           className="flex flex-col items-center gap-1 mx-auto text-white/25 hover:text-white/50 transition-colors duration-200"
+//         >
+//           <span className="text-[10px] tracking-[0.2em] uppercase font-semibold">
+//             Scroll
+//           </span>
 
-
+//           <ChevronDown size={16} className="animate-bounce" />
+//         </motion.button>
+//       </div>
+//     </section>
+//   );
+// }
