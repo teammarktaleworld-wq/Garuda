@@ -1,26 +1,37 @@
+
+
+
+
+
 // "use client";
 
-// import { useState, useCallback, useEffect } from "react";
-// import Link from "next/link";
-// import { ArrowLeft, ChevronRight } from "lucide-react";
+// /*
+//  * OfferDetailClient — zero programmatic scrolling.
+//  *
+//  * SCROLL CONTRACT (read before editing):
+//  * ─────────────────────────────────────────────────────────────────────────────
+//  * ✅ User has 100% control over the page scroll position at all times.
+//  * ✅ handleGetOffer / handleTestDrive ONLY update React state.
+//  *    They do NOT call: scrollIntoView · window.scrollTo · router.push("#…")
+//  *    · document.documentElement.scrollTop · requestAnimationFrame + scroll
+//  *    · any scroll API of any kind.
+//  * ✅ No useEffect in this file touches the scroll position.
+//  * ✅ No hash-based navigation is used anywhere in this component tree.
+//  * ─────────────────────────────────────────────────────────────────────────────
+//  */
+
+// import { useState, useCallback } from "react";
 // import type { TataOffer, VehicleDetail, EnquiryType } from "@/lib/tata-offers";
 
 
-// import OfferHero from './OfferHero';
 // import CarGallery from './Cargallery';
+
 // import OfferBreakdown from './Offerbreakdown';
+// import VehicleSpecs from './Vehiclespecs';
 // import VehicleHighlights from './Vehiclehighlights';
 // import OfferEnquiryForm from './Offerenquiryform';
-// import MobileOfferCTA from './Mobileoffercta';
-// import VehicleSpecs from './Vehiclespecs';
-
-// /* ── Analytics ── */
-// declare global { interface Window { fbq?: (...a: unknown[]) => void; } }
-// function fbTrack(event: string, params?: Record<string, string>) {
-//   if (typeof window !== "undefined" && typeof window.fbq === "function") window.fbq("track", event, params);
-// }
-
-// interface Props {
+// import  resolveHighlights  from "../../lib/tata-offers";
+// interface OfferDetailClientProps {
 //   offer:       TataOffer;
 //   detail:      VehicleDetail;
 //   images:      string[];
@@ -28,88 +39,81 @@
 //   defaultType: EnquiryType;
 // }
 
-// export default function OfferDetailClient({ offer, detail, images, heroImage, defaultType }: Props) {
+// export default function OfferDetailClient({
+//   offer,
+//   detail,
+//   images,
+//   defaultType,
+// }: OfferDetailClientProps) {
+//   /*
+//    * enquiryType drives which pill is pre-selected in <OfferEnquiryForm>.
+//    * Changing it is the ONLY side-effect of the CTA buttons.
+//    * There is no scroll, no focus, no navigation attached to this state.
+//    */
 //   const [enquiryType, setEnquiryType] = useState<EnquiryType>(defaultType);
 
-//   // Fire analytics on mount
-//   useEffect(() => {
-//     fbTrack("ViewContent", { content_name: offer.model, offer_id: offer.id });
-//     fbTrack("OfferDetailView", { offer_id: offer.id });
-//   }, [offer.id, offer.model]);
-
-//   const scrollToEnquiry = useCallback(() => {
-//     document.getElementById("enquiry")?.scrollIntoView({ behavior: "smooth", block: "start" });
+//   // ✅ Sets enquiry type to "Get Offer" — nothing else.
+//   const handleGetOffer = useCallback(() => {
+//     setEnquiryType("Get Offer");
 //   }, []);
 
-//   const handleGetOffer = useCallback(() => {
-//     fbTrack("OfferEnquiryStart", { offer_id: offer.id, type: "Get Offer" });
-//     setEnquiryType("Get Offer");
-//     setTimeout(scrollToEnquiry, 60);
-//   }, [offer.id, scrollToEnquiry]);
-
+//   // ✅ Sets enquiry type to "Test Drive" — nothing else.
 //   const handleTestDrive = useCallback(() => {
-//     fbTrack("TestDriveStart", { offer_id: offer.id });
 //     setEnquiryType("Test Drive");
-//     setTimeout(scrollToEnquiry, 60);
-//   }, [offer.id, scrollToEnquiry]);
+//   }, []);
+
+//   const highlights = resolveHighlights(offer.id);
 
 //   return (
-//     <div className="min-h-screen bg-[#071020]">
-
-//       {/* ── Breadcrumb ── */}
-//       <div className="bg-[#071020] border-b border-white/[0.05] px-5 lg:px-12 py-3 sticky top-0 z-30 backdrop-blur-sm bg-[#071020]/90">
-//         <div className="max-w-[1440px] mx-auto flex items-center gap-2 text-[11px] text-white/35">
-//           <Link href="/" className="hover:text-white/60 transition-colors">Home</Link>
-//           <ChevronRight size={11} />
-//           <Link href="/#offers" className="hover:text-white/60 transition-colors">Offers</Link>
-//           <ChevronRight size={11} />
-//           <span className="text-white/55 truncate max-w-[140px]">
-//             {offer.model}{offer.variantLabel ? ` · ${offer.variantLabel}` : ""}
-//           </span>
-//         </div>
-//       </div>
-
-//       {/* ── Back link ── */}
-//       <div className="max-w-[1440px] mx-auto px-5 lg:px-12 pt-5">
-//         <Link
-//           href="/#offers"
-//           className="inline-flex items-center gap-1.5 text-[12px] text-white/40 hover:text-[#5BA3E8] transition-colors duration-150"
-//         >
-//           <ArrowLeft size={13} /> Back to all offers
-//         </Link>
-//       </div>
-
-//       {/* ── Hero ── */}
-//       <OfferHero
-//         offer={offer}
-//         heroImage={heroImage ?? undefined}
+//     <main>
+//       {/*
+//         CarGallery receives onGetOffer / onTestDrive.
+//         These are ONLY called on explicit user clicks — they never fire automatically.
+//         Inside CarGallery the thumbnail strip uses container.scrollTo() (not scrollIntoView)
+//         so only the strip's internal scroll moves, never the page.
+//       */}
+//       <CarGallery
+//         images={images}
+//         alt={offer.model}
 //         onGetOffer={handleGetOffer}
 //         onTestDrive={handleTestDrive}
 //       />
 
-//       {/* ── Gallery ── */}
-//       {images.length > 0 && (
-//         <CarGallery images={images} alt={offer.model} />
+//       {/*
+//         OfferBreakdown — NO id, NO scroll.
+//         onGetOffer is passed so the "CLAIM THIS OFFER" button pre-selects
+//         "Get Offer" in the form below. User still scrolls manually.
+//       */}
+//       <OfferBreakdown
+//         offer={offer}
+//         onGetOffer={handleGetOffer}
+//       />
+
+//       {/* VehicleSpecs — NO id, NO scroll. Pure display. */}
+//       <VehicleSpecs
+//         offer={offer}
+//         detail={detail}
+//       />
+
+//       {/* VehicleHighlights — NO id, NO scroll. Pure display. */}
+//       {highlights.length > 0 && (
+//         <VehicleHighlights
+//           offer={offer}
+//           highlights={highlights}
+//         />
 //       )}
 
-//       {/* ── Offer breakdown ── */}
-//       <OfferBreakdown offer={offer} onGetOffer={handleGetOffer} />
-
-//       {/* ── Vehicle specs ── */}
-//       <VehicleSpecs offer={offer} detail={detail} />
-
-//       {/* ── Highlights ── */}
-//       <VehicleHighlights offer={offer} highlights={detail.highlights} />
-
-//       {/* ── Enquiry form ── */}
-//       <OfferEnquiryForm offer={offer} defaultType={enquiryType} />
-
-//       {/* ── Mobile sticky CTA ── */}
-//       <MobileOfferCTA onGetOffer={handleGetOffer} onTestDrive={handleTestDrive} />
-
-//       {/* Bottom spacing for mobile CTA */}
-//       <div className="h-20 lg:h-0" />
-//     </div>
+//       {/*
+//         OfferEnquiryForm — NO id="enquiry", NO autoFocus, NO scroll.
+//         defaultType is driven by enquiryType state above.
+//         The form syncs via its own useEffect on the defaultType prop —
+//         that effect only calls setForm(), never touches scroll.
+//       */}
+//       <OfferEnquiryForm
+//         offer={offer}
+//         defaultType={enquiryType}
+//       />
+//     </main>
 //   );
 // }
 
@@ -119,103 +123,98 @@
 
 
 
-
-
-
-
-
-
-
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import Link from "next/link";
-import { ArrowLeft, ChevronRight } from "lucide-react";
-import type { TataOffer, VehicleDetail, EnquiryType } from "@/lib/tata-offers";
+import { useState, useCallback } from "react";
 
-import CarGallery from './Cargallery';
-import OfferBreakdown from './Offerbreakdown';
-import VehicleHighlights from './Vehiclehighlights';
-import OfferEnquiryForm from './Offerenquiryform';
-import VehicleSpecs from './Vehiclespecs';
+import type {
+  TataOffer,
+  VehicleDetail,
+  EnquiryType,
+} from "@/lib/tata-offers";
 
-/* ── Analytics ── */
-declare global { interface Window { fbq?: (...a: unknown[]) => void; } }
-function fbTrack(event: string, params?: Record<string, string>) {
-  if (typeof window !== "undefined" && typeof window.fbq === "function") window.fbq("track", event, params);
-}
+import CarGallery from "./Cargallery";
+import OfferBreakdown from "./Offerbreakdown";
+import VehicleSpecs from "./Vehiclespecs";
+import VehicleHighlights from "./Vehiclehighlights";
+import OfferEnquiryForm from "./Offerenquiryform";
 
-interface Props {
-  offer:       TataOffer;
-  detail:      VehicleDetail;
-  images:      string[];
-  heroImage:   string | null;
+interface OfferDetailClientProps {
+  offer: TataOffer;
+  detail: VehicleDetail;
+  images: string[];
+  heroImage: string | null;
   defaultType: EnquiryType;
 }
 
-export default function OfferDetailClient({ offer, detail, images, heroImage, defaultType }: Props) {
-  const [enquiryType, setEnquiryType] = useState<EnquiryType>(defaultType);
+export default function OfferDetailClient({
+  offer,
+  detail,
+  images,
+  defaultType,
+}: OfferDetailClientProps) {
+  /*
+   * IMPORTANT:
+   * This component contains ZERO programmatic scrolling.
+   *
+   * CTA buttons only update React state.
+   * They do NOT:
+   * - scrollTo()
+   * - scrollIntoView()
+   * - scrollBy()
+   * - change scrollTop
+   * - change URL hashes
+   * - focus inputs
+   */
 
-  useEffect(() => {
-    fbTrack("ViewContent", { content_name: offer.model, offer_id: offer.id });
-    fbTrack("OfferDetailView", { offer_id: offer.id });
-  }, [offer.id, offer.model]);
-
-  const scrollToEnquiry = useCallback(() => {
-    document.getElementById("enquiry")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, []);
+  const [enquiryType, setEnquiryType] =
+    useState<EnquiryType>(defaultType);
 
   const handleGetOffer = useCallback(() => {
-    fbTrack("OfferEnquiryStart", { offer_id: offer.id, type: "Get Offer" });
     setEnquiryType("Get Offer");
-    setTimeout(scrollToEnquiry, 60);
-  }, [offer.id, scrollToEnquiry]);
+  }, []);
 
   const handleTestDrive = useCallback(() => {
-    fbTrack("TestDriveStart", { offer_id: offer.id });
     setEnquiryType("Test Drive");
-    setTimeout(scrollToEnquiry, 60);
-  }, [offer.id, scrollToEnquiry]);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#071020]">
-
-      {/* ── Breadcrumb ── */}
-      <div className="bg-[#071020]/90 border-b border-white/[0.05] px-5 lg:px-12 py-3 sticky top-0 z-30 backdrop-blur-sm">
-        <div className="max-w-[1440px] mx-auto flex items-center gap-2 text-[11px] text-white/35">
-          <Link href="/" className="hover:text-white/60 transition-colors">Home</Link>
-          <ChevronRight size={11} />
-          <Link href="/#offers" className="hover:text-white/60 transition-colors">Offers</Link>
-          <ChevronRight size={11} />
-          <span className="text-white/55 truncate max-w-[140px]">
-            {offer.model}{offer.variantLabel ? ` · ${offer.variantLabel}` : ""}
-          </span>
-        </div>
-      </div>
-
-      {/* ── Back link ── */}
-      <div className="max-w-[1440px] mx-auto px-5 lg:px-12 pt-5">
-        <Link
-          href="/#offers"
-          className="inline-flex items-center gap-1.5 text-[12px] text-white/40 hover:text-[#5BA3E8] transition-colors duration-150"
-        >
-          <ArrowLeft size={13} /> Back to all offers
-        </Link>
-      </div>
-
-      {/* ── 1. Gallery (top, full width) ── */}
+    <main className="min-h-screen">
+      {/* Vehicle Gallery */}
       {images.length > 0 && (
-        <CarGallery images={images} alt={offer.model} />
+        <CarGallery
+          images={images}
+          alt={offer.model}
+          onGetOffer={handleGetOffer}
+          onTestDrive={handleTestDrive}
+        />
       )}
 
-      {/* ── 2. Offer info block ── */}
-      <OfferBreakdown offer={offer} onGetOffer={handleGetOffer} />
-      <VehicleSpecs offer={offer} detail={detail} />
-      <VehicleHighlights offer={offer} highlights={detail.highlights} />
+      {/* Offer Breakdown */}
+      <OfferBreakdown
+        offer={offer}
+        onGetOffer={handleGetOffer}
+      />
 
-      {/* ── 3. Enquiry form ── */}
-      <OfferEnquiryForm offer={offer} defaultType={enquiryType} />
+      {/* Vehicle Specifications */}
+      <VehicleSpecs
+        offer={offer}
+        detail={detail}
+      />
 
-    </div>
+      {/* Vehicle Highlights */}
+      {detail.highlights.length > 0 && (
+        <VehicleHighlights
+          offer={offer}
+          highlights={detail.highlights}
+        />
+      )}
+
+      {/* Enquiry Form */}
+      <OfferEnquiryForm
+        offer={offer}
+        defaultType={enquiryType}
+      />
+    </main>
   );
 }

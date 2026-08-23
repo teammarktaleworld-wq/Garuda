@@ -14,12 +14,14 @@ export type ModelYear = "MY24" | "MY25";
 // ── Vehicle gallery map ───────────────────────────────────────────────────────
 // High-resolution vehicle images mapped to base model slugs.
 export const MODEL_GALLERY: Record<string, string[]> = {
-  tiago: [
-    "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=80",
-  ],
+  tiago:  [
+  "/Car images/Tata tiago/image1.jpg",
+  "/Car images/Tata tiago/image2.jpg",
+  "/Car images/Tata tiago/image3.jpg",
+  "/Car images/Tata tiago/image4.jpg",
+  "/Car images/Tata tiago/image5.jpg",
+  "/Car images/Tata tiago/image6.jpg",
+],
   "tiago-ev": [
     "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200&q=80",
     "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80",
