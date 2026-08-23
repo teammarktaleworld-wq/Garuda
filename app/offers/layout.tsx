@@ -1,6 +1,7 @@
 // app/offers/layout.tsx
 
 import CampaignNavbar from "@/app/components/CampaignNavbar";
+import GarudChatbot from "../components/Garudchatbot";
 
 export default function OffersLayout({
   children,
@@ -14,6 +15,7 @@ export default function OffersLayout({
         phone="+919876543210"
         offerSectionId="offers"
       />
+      <GarudChatbot />
 
       {/* Space reserved for fixed navbar */}
       <main className="pt-[80px]">
