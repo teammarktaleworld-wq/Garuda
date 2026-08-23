@@ -107,9 +107,6 @@
 
 
 
-
-
-
 "use client";
 
 import { useState, useCallback, useRef } from "react";
@@ -137,27 +134,23 @@ export default function OfferDetailClient({
 }: OfferDetailClientProps) {
   const [enquiryType, setEnquiryType] = useState<EnquiryType>(defaultType);
 
-  // Refs for scroll targets
   const offerBreakdownRef = useRef<HTMLDivElement>(null);
   const enquiryFormRef    = useRef<HTMLDivElement>(null);
 
-  const scrollTo = (ref: React.RefObject<HTMLDivElement>) => {
+  const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) => {
     ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // "Get Offer" in CarGallery → scroll to OfferBreakdown
   const handleGetOffer = useCallback(() => {
     setEnquiryType("Get Offer");
     scrollTo(offerBreakdownRef);
   }, []);
 
-  // "Test Drive" in CarGallery → set type + scroll to EnquiryForm
   const handleTestDrive = useCallback(() => {
     setEnquiryType("Test Drive");
     scrollTo(enquiryFormRef);
   }, []);
 
-  // "Claim This Offer" in OfferBreakdown → scroll to EnquiryForm
   const handleClaimOffer = useCallback(() => {
     setEnquiryType("Get Offer");
     scrollTo(enquiryFormRef);
@@ -175,7 +168,6 @@ export default function OfferDetailClient({
         />
       )}
 
-      {/* Scroll target: Offer Breakdown */}
       <div ref={offerBreakdownRef} className="scroll-mt-20">
         <OfferBreakdown
           offer={offer}
@@ -189,7 +181,6 @@ export default function OfferDetailClient({
         <VehicleHighlights offer={offer} highlights={detail.highlights} />
       )}
 
-      {/* Scroll target: Enquiry Form */}
       <div ref={enquiryFormRef} className="scroll-mt-20">
         <OfferEnquiryForm
           offer={offer}
