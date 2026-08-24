@@ -2302,6 +2302,804 @@
 
 
 
+// "use client";
+
+// import React, { useState, useMemo, useEffect } from "react";
+// import {
+//   motion,
+//   AnimatePresence,
+//   useReducedMotion,
+//   animate,
+// } from "framer-motion";
+// import {
+//   OFFERS,
+//   TataOffer,
+//   Powertrain,
+// } from "@/lib/offersdata";
+
+// // ============================================================================
+// // LOCAL HELPERS & TYPES
+// // ============================================================================
+// type EnquiryType = "Offer Enquiry" | "Test Drive";
+
+// // ✅ 3 showrooms as requested
+// const SHOWROOMS = [
+//   "Garud Tata Palam",
+//   "Garud Tata Narela",
+//   "Garud Tata Najafgarh",
+// ];
+
+// // Showroom location details for display
+// const SHOWROOM_META: Record<string, { area: string; city: string }> = {
+//   "Garud Tata Palam":      { area: "Palam",      city: "South-West Delhi" },
+//   "Garud Tata Narela":     { area: "Narela",     city: "North Delhi" },
+//   "Garud Tata Najafgarh":  { area: "Najafgarh",  city: "West Delhi" },
+// };
+
+// const LAST_UPDATED = new Date().toLocaleDateString("en-IN", {
+//   month: "long",
+//   year: "numeric",
+// });
+
+// const formatINR = (amount: number) =>
+//   new Intl.NumberFormat("en-IN", {
+//     style: "currency",
+//     currency: "INR",
+//     maximumFractionDigits: 0,
+//   }).format(amount);
+
+// // ============================================================================
+// // CAR METADATA & IMAGES
+// // ============================================================================
+// const CAR_BODY_TYPES: Record<string, string> = {
+//   Tiago:   "Hatchback",
+//   Punch:   "Compact SUV",
+//   Altroz:  "Premium Hatchback",
+//   Nexon:   "Compact SUV",
+//   Curvv:   "SUV Coupé",
+//   Harrier: "Premium SUV",
+//   Safari:  "Flagship 7-Seater SUV",
+// };
+
+// const CAR_IMAGES: Record<string, string[]> = {
+//   tiago:      ["/Car images/Tata tiago/image1.jpg","/Car images/Tata tiago/image2.jpg","/Car images/Tata tiago/image3.jpg"],
+//   "tiago-ev": ["/Car images/Tata tiago/image1.jpg","/Car images/Tata tiago/image2.jpg","/Car images/Tata tiago/image3.jpg"],
+//   tigor:      ["/Car images/Tata tigor/image1.avif","/Car images/Tata tigor/image2.avif"],
+//   altroz:     ["/Car images/Tata altroz/image1.avif","/Car images/Tata altroz/image2.avif"],
+//   punch:      ["/Car images/Tata punch/image1.jpg","/Car images/Tata punch/image2.jpg"],
+//   "punch-ev": ["/Car images/Tata punch/image1.jpg","/Car images/Tata punch/image2.jpg"],
+//   nexon:      ["/Car images/Tata nexon/image1.avif","/Car images/Tata nexon/image2.avif"],
+//   "nexon-ev": ["/Car images/Tata nexon/image1.avif","/Car images/Tata nexon/image2.avif"],
+//   curvv:      ["/Car images/Tata curv/image1.avif","/Car images/Tata curv/image2.avif"],
+//   "curvv-ev": ["/Car images/Tata curv/image1.avif","/Car images/Tata curv/image2.avif"],
+//   harrier:    ["/Car images/Tata harrier/image1.avif","/Car images/Tata harrier/image2.avif"],
+//   "harrier-ev":["/Car images/Tata harrier/image1.avif","/Car images/Tata harrier/image2.avif"],
+//   safari:     ["/Car images/Tata safari/image1.avif","/Car images/Tata safari/image2.avif"],
+// };
+
+// const getCarImage = (model: string, isEV = false) => {
+//   const key = isEV ? `${model.toLowerCase()}-ev` : model.toLowerCase();
+//   return CAR_IMAGES[key]?.[0] || CAR_IMAGES[model.toLowerCase()]?.[0] || "/placeholder-car.jpg";
+// };
+
+// // ============================================================================
+// // ANIMATED COUNTER
+// // ============================================================================
+// function AnimatedCounter({ value }: { value: number }) {
+//   const prefersReduced = useReducedMotion();
+//   const [display, setDisplay] = useState(prefersReduced ? value : 0);
+
+//   useEffect(() => {
+//     if (prefersReduced) { setDisplay(value); return; }
+//     const c = animate(0, value, {
+//       duration: 1.1,
+//       ease: [0.16, 1, 0.3, 1],
+//       onUpdate: (v) => setDisplay(Math.round(v)),
+//     });
+//     return () => c.stop();
+//   }, [value, prefersReduced]);
+
+//   return <span>{formatINR(display)}</span>;
+// }
+
+// // ============================================================================
+// // ENQUIRY MODAL  — fixed: sends `name` + `mobile` to match the API contract
+// // ============================================================================
+// interface EnquiryModalProps {
+//   isOpen: boolean;
+//   onClose: () => void;
+//   selectedCar: string;
+//   enquiryType: EnquiryType;
+//   offerDetails?: TataOffer | null;
+// }
+
+// function OfferEnquiryModal({
+//   isOpen,
+//   onClose,
+//   selectedCar,
+//   enquiryType,
+//   offerDetails,
+// }: EnquiryModalProps) {
+//   const [name, setName]               = useState("");
+//   const [mobile, setMobile]           = useState("");
+//   const [showroom, setShowroom]       = useState(SHOWROOMS[0]);
+//   const [isSubmitting, setSubmitting] = useState(false);
+//   const [isSuccess, setSuccess]       = useState(false);
+//   const [error, setError]             = useState("");
+
+//   if (!isOpen) return null;
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     if (mobile.replace(/\D/g, "").length < 10) {
+//       setError("Please enter a valid 10-digit mobile number.");
+//       return;
+//     }
+//     setSubmitting(true);
+//     setError("");
+
+//     try {
+//       // Fire Meta pixel if present
+//       const w = window as unknown as { fbq?: (...a: unknown[]) => void };
+//       w.fbq?.("track", "Lead", {
+//         content_name: selectedCar,
+//         content_category: enquiryType,
+//         value: offerDetails?.maxOffer ?? 0,
+//         currency: "INR",
+//       });
+
+//       // ✅ API expects `name` and `mobile`, not `fullName` and `phone`
+//       await fetch("/api/enquiry", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           name,
+//           mobile,
+//           car: selectedCar,
+//           variant: offerDetails?.variant ?? "General",
+//           type: enquiryType,
+//           showroom,
+//           source: "offers-page",
+//         }),
+//       });
+
+//       setSuccess(true);
+//     } catch {
+//       setSuccess(true); // graceful fail
+//     } finally {
+//       setSubmitting(false);
+//     }
+//   };
+
+//   return (
+//     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm">
+//       <div
+//         role="dialog"
+//         aria-modal="true"
+//         className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden"
+//       >
+//         {/* Modal header strip */}
+//         <div className="bg-[#004b8d] px-6 py-4 flex items-center justify-between">
+//           <div>
+//             <p className="text-[10px] uppercase tracking-widest font-bold text-blue-200">
+//               {enquiryType === "Test Drive" ? "Book a Test Drive" : "Claim Your Offer"}
+//             </p>
+//             <p className="text-white font-black text-base leading-tight">
+//               Tata {selectedCar}
+//             </p>
+//           </div>
+//           <button
+//             onClick={onClose}
+//             className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition-colors"
+//             aria-label="Close"
+//           >
+//             ✕
+//           </button>
+//         </div>
+
+//         <div className="p-6">
+//           {isSuccess ? (
+//             <div className="text-center py-6">
+//               <div className="w-14 h-14 rounded-full bg-emerald-100 border-2 border-emerald-400 flex items-center justify-center mx-auto mb-4 text-emerald-600 text-2xl font-black">
+//                 ✓
+//               </div>
+//               <h3 className="text-xl font-black text-slate-800 mb-2">We'll Be In Touch!</h3>
+//               <p className="text-sm text-slate-500 mb-6 leading-relaxed">
+//                 Our <strong className="text-slate-700">{showroom}</strong> team will call you shortly
+//                 with the best deal on your <strong className="text-[#004b8d]">{selectedCar}</strong>.
+//               </p>
+//               <button
+//                 onClick={onClose}
+//                 className="w-full min-h-[48px] bg-[#004b8d] hover:bg-[#00366e] font-bold rounded-xl text-white transition-colors"
+//               >
+//                 Done
+//               </button>
+//             </div>
+//           ) : (
+//             <form onSubmit={handleSubmit} className="space-y-4">
+//               {error && (
+//                 <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2.5 font-medium">
+//                   {error}
+//                 </p>
+//               )}
+
+//               {/* Name */}
+//               <div>
+//                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+//                   Your Name
+//                 </label>
+//                 <input
+//                   type="text"
+//                   required
+//                   value={name}
+//                   onChange={(e) => setName(e.target.value)}
+//                   placeholder="Enter your full name"
+//                   className="w-full bg-slate-50 border border-slate-200 focus:border-[#004b8d] focus:ring-2 focus:ring-[#004b8d]/20 rounded-xl px-4 py-3 text-sm text-slate-800 outline-none transition-all font-medium"
+//                 />
+//               </div>
+
+//               {/* Mobile */}
+//               <div>
+//                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+//                   Mobile Number
+//                 </label>
+//                 <input
+//                   type="tel"
+//                   required
+//                   maxLength={10}
+//                   value={mobile}
+//                   onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
+//                   placeholder="10-digit mobile number"
+//                   className="w-full bg-slate-50 border border-slate-200 focus:border-[#004b8d] focus:ring-2 focus:ring-[#004b8d]/20 rounded-xl px-4 py-3 text-sm text-slate-800 outline-none transition-all font-medium"
+//                 />
+//               </div>
+
+//               {/* Showroom — ✅ all 3 with area info */}
+//               <div>
+//                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+//                   Nearest Showroom
+//                 </label>
+//                 <div className="space-y-2">
+//                   {SHOWROOMS.map((s) => {
+//                     const meta = SHOWROOM_META[s];
+//                     return (
+//                       <button
+//                         key={s}
+//                         type="button"
+//                         onClick={() => setShowroom(s)}
+//                         className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border text-left transition-all ${
+//                           showroom === s
+//                             ? "border-[#004b8d] bg-[#004b8d]/5 ring-2 ring-[#004b8d]/20"
+//                             : "border-slate-200 hover:border-[#004b8d]/40 bg-white"
+//                         }`}
+//                       >
+//                         <div>
+//                           <p className={`text-sm font-bold ${showroom === s ? "text-[#004b8d]" : "text-slate-700"}`}>
+//                             {s}
+//                           </p>
+//                           <p className="text-[11px] text-slate-400 font-medium mt-0.5">{meta.city}</p>
+//                         </div>
+//                         <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+//                           showroom === s
+//                             ? "border-[#004b8d] bg-[#004b8d]"
+//                             : "border-slate-300"
+//                         }`}>
+//                           {showroom === s && <span className="w-2 h-2 rounded-full bg-white block" />}
+//                         </span>
+//                       </button>
+//                     );
+//                   })}
+//                 </div>
+//               </div>
+
+//               <button
+//                 type="submit"
+//                 disabled={isSubmitting}
+//                 className="w-full min-h-[52px] bg-[#004b8d] hover:bg-[#00366e] disabled:opacity-60 text-white font-black rounded-xl transition-colors shadow-lg shadow-[#004b8d]/25 mt-2 text-sm"
+//               >
+//                 {isSubmitting
+//                   ? "Submitting…"
+//                   : enquiryType === "Test Drive"
+//                   ? "Confirm Test Drive →"
+//                   : "Get Best Price & Offer →"}
+//               </button>
+
+//               <p className="text-[10px] text-center text-slate-400 leading-relaxed">
+//                 By submitting, you agree to be contacted via call or WhatsApp by Garud Tata.
+//               </p>
+//             </form>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// // ============================================================================
+// // STEP PROGRESS BAR
+// // ============================================================================
+// function StepProgress({
+//   current,
+//   total,
+//   labels,
+// }: {
+//   current: number;
+//   total: number;
+//   labels: string[];
+// }) {
+//   return (
+//     <div className="px-5 sm:px-8 py-4 border-b border-slate-200 bg-white">
+//       {/* Mobile */}
+//       <div className="flex sm:hidden items-center justify-between text-xs">
+//         <div className="flex items-center gap-2">
+//           <span className="w-6 h-6 rounded-full bg-[#004b8d] text-white flex items-center justify-center text-[11px] font-black">
+//             {current}
+//           </span>
+//           <span className="font-bold text-slate-700">{labels[current - 1]}</span>
+//         </div>
+//         <span className="text-slate-400 font-semibold">{current} / {total}</span>
+//       </div>
+
+//       {/* Desktop */}
+//       <div className="hidden sm:flex items-center justify-between relative">
+//         {/* Track */}
+//         <div className="absolute top-3.5 left-0 right-0 h-0.5 bg-slate-200 z-0" />
+//         <div
+//           className="absolute top-3.5 left-0 h-0.5 bg-[#004b8d] z-0 transition-all duration-500"
+//           style={{ width: `${((current - 1) / (total - 1)) * 100}%` }}
+//         />
+
+//         {labels.map((label, i) => {
+//           const step = i + 1;
+//           const done = step < current;
+//           const active = step === current;
+//           return (
+//             <div key={label} className="relative z-10 flex flex-col items-center gap-1.5">
+//               <span
+//                 className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-black transition-all duration-300 ${
+//                   done
+//                     ? "bg-[#004b8d] text-white"
+//                     : active
+//                     ? "bg-[#004b8d] text-white ring-4 ring-[#004b8d]/20"
+//                     : "bg-slate-100 text-slate-400 border border-slate-200"
+//                 }`}
+//               >
+//                 {done ? "✓" : step}
+//               </span>
+//               <span
+//                 className={`text-[10px] font-bold uppercase tracking-wider ${
+//                   active ? "text-[#004b8d]" : done ? "text-slate-500" : "text-slate-300"
+//                 }`}
+//               >
+//                 {label}
+//               </span>
+//             </div>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// }
+
+// // ============================================================================
+// // MAIN OFFERS COMPONENT
+// // ============================================================================
+// export default function Offers() {
+//   const prefersReduced = useReducedMotion();
+
+//   const [selectedCar, setSelectedCar]           = useState<string | null>(null);
+//   const [selectedPowertrain, setSelectedPowertrain] = useState<Powertrain | null>(null);
+//   const [selectedVariantId, setSelectedVariantId]   = useState<string | null>(null);
+//   const [modal, setModal] = useState<{ open: boolean; type: EnquiryType }>({
+//     open: false,
+//     type: "Offer Enquiry",
+//   });
+
+//   const availableCars = useMemo(() => {
+//     const list: string[] = [];
+//     OFFERS.forEach((o) => { if (o.active && !list.includes(o.model)) list.push(o.model); });
+//     return list;
+//   }, []);
+
+//   const availablePowertrains = useMemo(() => {
+//     if (!selectedCar) return [];
+//     return Array.from(
+//       new Set(OFFERS.filter((o) => o.active && o.model === selectedCar).map((o) => o.powertrain))
+//     );
+//   }, [selectedCar]);
+
+//   const matchingOffers = useMemo(() => {
+//     if (!selectedCar || !selectedPowertrain) return [];
+//     return OFFERS.filter((o) => o.active && o.model === selectedCar && o.powertrain === selectedPowertrain);
+//   }, [selectedCar, selectedPowertrain]);
+
+//   const needsVariant = matchingOffers.length > 1;
+
+//   const finalOffer = useMemo<TataOffer | null>(() => {
+//     if (!selectedCar || !selectedPowertrain || !matchingOffers.length) return null;
+//     if (matchingOffers.length === 1) return matchingOffers[0];
+//     return matchingOffers.find((o) => o.id === selectedVariantId) ?? null;
+//   }, [selectedCar, selectedPowertrain, matchingOffers, selectedVariantId]);
+
+//   const stepLabels = needsVariant
+//     ? ["Car", "Powertrain", "Variant", "Offer"]
+//     : ["Car", "Powertrain", "Offer"];
+
+//   const currentStep = useMemo(() => {
+//     if (!selectedCar) return 1;
+//     if (!selectedPowertrain) return 2;
+//     if (needsVariant && !selectedVariantId) return 3;
+//     return stepLabels.length;
+//   }, [selectedCar, selectedPowertrain, needsVariant, selectedVariantId, stepLabels.length]);
+
+//   const goBack = () => {
+//     if (needsVariant && selectedVariantId) { setSelectedVariantId(null); return; }
+//     if (selectedPowertrain) { setSelectedPowertrain(null); return; }
+//     setSelectedCar(null);
+//   };
+
+//   const reset = () => {
+//     setSelectedCar(null);
+//     setSelectedPowertrain(null);
+//     setSelectedVariantId(null);
+//   };
+
+//   const motion_step = {
+//     initial: prefersReduced ? {} : { opacity: 0, y: 16 },
+//     animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+//     exit:    prefersReduced ? {} : { opacity: 0, y: -10, transition: { duration: 0.2 } },
+//   };
+
+//   return (
+//     <section className="min-h-screen bg-slate-100 py-10 px-4 sm:px-6 font-sans">
+//       {/* ── HERO ─────────────────────────────────────────────────── */}
+//       <div className="max-w-4xl mx-auto text-center mb-8">
+//         <span className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-[#004b8d] bg-white border border-[#004b8d]/20 px-4 py-1.5 rounded-full mb-4 shadow-sm">
+//           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+//           Garud Tata · Live Offers
+//         </span>
+//         <h1 className="text-3xl sm:text-4xl md:text-[2.75rem] font-black tracking-tight text-slate-800 leading-[1.15]">
+//           Find Your Tata Offer
+//         </h1>
+//         <p className="text-sm sm:text-base text-slate-500 max-w-md mx-auto mt-3 font-medium leading-relaxed">
+//           Select your model and discover exclusive benefits available this month.
+//         </p>
+//       </div>
+
+//       {/* ── MAIN CARD ─────────────────────────────────────────────── */}
+//       <div className="max-w-[960px] mx-auto bg-white border border-slate-200 rounded-3xl shadow-xl shadow-slate-200/80 overflow-hidden">
+//         <StepProgress current={currentStep} total={stepLabels.length} labels={stepLabels} />
+
+//         <div className="p-5 sm:p-8 md:p-10">
+//           <AnimatePresence mode="wait">
+
+//             {/* ── STEP 1 : CAR GRID ─────────────────────────────── */}
+//             {!selectedCar && (
+//               <motion.div key="step-car" {...motion_step}>
+//                 <h2 className="text-lg sm:text-xl font-black text-slate-800 mb-6 text-center">
+//                   Which Tata are you interested in?
+//                 </h2>
+//                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+//                   {availableCars.map((car) => (
+//                     <button
+//                       key={car}
+//                       onClick={() => { setSelectedCar(car); setSelectedPowertrain(null); setSelectedVariantId(null); }}
+//                       className="group relative text-left rounded-2xl border border-slate-200 hover:border-[#004b8d] bg-white shadow-sm hover:shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#004b8d]"
+//                     >
+//                       {/* Image */}
+//                       <div className="relative h-28 sm:h-32 bg-slate-100 overflow-hidden">
+//                         <img
+//                           src={getCarImage(car)}
+//                           alt={`Tata ${car}`}
+//                           loading="lazy"
+//                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+//                         />
+//                         {/* Subtle gradient footer on image */}
+//                         <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white/50 to-transparent" />
+//                       </div>
+//                       {/* Label */}
+//                       <div className="px-3.5 py-3">
+//                         <p className="text-sm font-black text-slate-800 uppercase tracking-wide leading-none group-hover:text-[#004b8d] transition-colors">
+//                           {car}
+//                         </p>
+//                         <p className="text-[11px] text-slate-400 font-semibold mt-0.5">
+//                           {CAR_BODY_TYPES[car] ?? "Tata Vehicle"}
+//                         </p>
+//                       </div>
+//                       {/* Hover accent bar */}
+//                       <div className="absolute bottom-0 inset-x-0 h-0.5 bg-[#004b8d] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+//                     </button>
+//                   ))}
+//                 </div>
+//               </motion.div>
+//             )}
+
+//             {/* ── STEP 2 : POWERTRAIN ───────────────────────────── */}
+//             {selectedCar && !selectedPowertrain && (
+//               <motion.div key="step-pt" {...motion_step}>
+//                 <div className="text-center mb-8">
+//                   <span className="inline-block text-xs font-black uppercase tracking-wider bg-[#004b8d]/8 text-[#004b8d] px-3 py-1 rounded-full mb-3">
+//                     {selectedCar}
+//                   </span>
+//                   <h2 className="text-lg sm:text-xl font-black text-slate-800">
+//                     Fuel or powertrain type?
+//                   </h2>
+//                 </div>
+
+//                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
+//                   {availablePowertrains.map((pt) => (
+//                     <button
+//                       key={pt}
+//                       onClick={() => handleSelectPowertrain(pt)}
+//                       className="group flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border border-slate-200 hover:border-[#004b8d] bg-white hover:bg-[#004b8d]/4 transition-all shadow-sm hover:shadow-md focus-visible:ring-2 focus-visible:ring-[#004b8d]"
+//                     >
+//                       <span className="text-2xl">
+//                         {pt === "Electric" ? "⚡" : pt === "Petrol" ? "⛽" : pt === "Diesel" ? "🔧" : "🔋"}
+//                       </span>
+//                       <span className="text-sm font-black text-slate-800 group-hover:text-[#004b8d] transition-colors">
+//                         {pt}
+//                       </span>
+//                       <span className="text-[10px] text-slate-400 font-semibold">
+//                         {pt === "Electric" ? "Zero Emissions" : "Available Now"}
+//                       </span>
+//                     </button>
+//                   ))}
+//                 </div>
+
+//                 <p className="text-center mt-8">
+//                   <button onClick={goBack} className="text-xs text-slate-400 hover:text-[#004b8d] font-bold transition-colors underline-offset-4 hover:underline">
+//                     ← Back to car selection
+//                   </button>
+//                 </p>
+//               </motion.div>
+//             )}
+
+//             {/* ── STEP 3 : VARIANT (conditional) ───────────────── */}
+//             {selectedCar && selectedPowertrain && needsVariant && !selectedVariantId && (
+//               <motion.div key="step-var" {...motion_step}>
+//                 <div className="text-center mb-8">
+//                   <span className="inline-block text-xs font-black uppercase tracking-wider bg-[#004b8d]/8 text-[#004b8d] px-3 py-1 rounded-full mb-3">
+//                     {selectedCar} · {selectedPowertrain}
+//                   </span>
+//                   <h2 className="text-lg sm:text-xl font-black text-slate-800">
+//                     Choose your variant
+//                   </h2>
+//                   <p className="text-xs text-slate-400 mt-1 font-medium">
+//                     Different variants have different eligible benefits
+//                   </p>
+//                 </div>
+
+//                 <div className="space-y-3 max-w-lg mx-auto">
+//                   {matchingOffers.map((offer) => (
+//                     <button
+//                       key={offer.id}
+//                       onClick={() => setSelectedVariantId(offer.id)}
+//                       className="w-full flex items-center justify-between px-5 py-4 rounded-2xl border border-slate-200 hover:border-[#004b8d] bg-white hover:bg-[#004b8d]/4 transition-all shadow-sm hover:shadow-md text-left group focus-visible:ring-2 focus-visible:ring-[#004b8d]"
+//                     >
+//                       <div>
+//                         <p className="text-sm font-bold text-slate-800 group-hover:text-[#004b8d] transition-colors">
+//                           {offer.variant}
+//                         </p>
+//                         <p className="text-xs text-slate-400 font-semibold mt-0.5">{offer.modelYear} Edition</p>
+//                       </div>
+//                       <div className="text-right">
+//                         <p className="text-[10px] uppercase font-bold tracking-wider text-[#004b8d]/50">Up to</p>
+//                         <p className="text-base font-black text-[#004b8d]">{formatINR(offer.maxOffer)}</p>
+//                       </div>
+//                     </button>
+//                   ))}
+//                 </div>
+
+//                 <p className="text-center mt-8">
+//                   <button onClick={goBack} className="text-xs text-slate-400 hover:text-[#004b8d] font-bold transition-colors underline-offset-4 hover:underline">
+//                     ← Back to powertrain
+//                   </button>
+//                 </p>
+//               </motion.div>
+//             )}
+
+//             {/* ── STEP 4 : OFFER RESULT ─────────────────────────── */}
+//             {finalOffer && (
+//               <motion.div key="step-result" {...motion_step} className="max-w-xl mx-auto">
+//                 {/* ── Offer Hero Card ── */}
+//                 <div className="rounded-3xl overflow-hidden border border-slate-200 shadow-xl shadow-slate-200/60">
+
+//                   {/* Hero Banner: deep navy with diagonal accent, car image overlay */}
+//                   <div className="relative h-52 sm:h-60 overflow-hidden bg-[#003570]">
+//                     {/* Geometric accent – adds depth without muddiness */}
+//                     <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-[#0059a8]/50" />
+//                     <div className="absolute -left-10 -bottom-10 w-48 h-48 rounded-full bg-[#002a58]/60" />
+
+//                     {/* Car image — subtle, not overwhelming */}
+//                     <img
+//                       src={getCarImage(finalOffer.model, finalOffer.powertrain === "Electric")}
+//                       alt={`Tata ${finalOffer.model}`}
+//                       className="absolute inset-0 w-full h-full object-cover opacity-35 mix-blend-luminosity"
+//                     />
+
+//                     {/* Content overlay */}
+//                     <div className="absolute inset-0 flex flex-col justify-end p-6">
+//                       <p className="text-[10px] uppercase font-black tracking-[0.25em] text-blue-300/80 mb-1">
+//                         Your Garud Tata Offer
+//                       </p>
+//                       <h2 className="text-3xl sm:text-4xl font-black text-white leading-none">
+//                         Tata {finalOffer.model}
+//                         {finalOffer.category === "EV" && !finalOffer.model.includes("EV") ? " EV" : ""}
+//                       </h2>
+//                       <div className="flex flex-wrap gap-2 mt-2">
+//                         {[finalOffer.variant, finalOffer.powertrain, finalOffer.modelYear].map((tag) => (
+//                           <span
+//                             key={tag}
+//                             className="text-[10px] font-bold uppercase tracking-wider bg-white/15 text-white/90 px-2.5 py-1 rounded-full"
+//                           >
+//                             {tag}
+//                           </span>
+//                         ))}
+//                       </div>
+//                     </div>
+//                   </div>
+
+//                   {/* Offer body */}
+//                   <div className="p-6 sm:p-8 bg-white">
+//                     {/* Max benefit highlight */}
+//                     <div className="text-center mb-7 py-5 rounded-2xl bg-slate-50 border border-slate-100">
+//                       <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">
+//                         Maximum Eligible Benefits
+//                       </p>
+//                       <p className="text-4xl sm:text-5xl font-black text-[#004b8d] leading-none">
+//                         <span className="text-lg align-middle font-bold text-[#004b8d]/60 mr-1">UP TO</span>
+//                         <AnimatedCounter value={finalOffer.maxOffer} />
+//                       </p>
+//                     </div>
+
+//                     {/* Breakdown grid */}
+//                     <div className="mb-6">
+//                       <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 text-center mb-3">
+//                         Benefit Breakdown
+//                       </p>
+//                       <div className="grid grid-cols-2 gap-2.5">
+//                         {finalOffer.cash > 0 && (
+//                           <BenefitChip label="Consumer Discount" value={finalOffer.cash} />
+//                         )}
+//                         {finalOffer.exchangeBenefit > 0 && (
+//                           <BenefitChip label="Exchange Bonus" value={finalOffer.exchangeBenefit} />
+//                         )}
+//                         {finalOffer.scrappageBenefit > 0 && (
+//                           <BenefitChip label="Scrappage Bonus" value={finalOffer.scrappageBenefit} />
+//                         )}
+//                         {finalOffer.loyaltyBenefit > 0 && (
+//                           <BenefitChip label="Loyalty Reward" value={finalOffer.loyaltyBenefit} />
+//                         )}
+//                       </div>
+
+//                       {/* Total row */}
+//                       <div className="flex items-center justify-between mt-3 px-4 py-3.5 rounded-xl bg-[#004b8d] text-white shadow-lg shadow-[#004b8d]/20">
+//                         <span className="font-bold text-sm">Total Benefits</span>
+//                         <span className="font-black text-lg">{formatINR(finalOffer.maxOffer)}</span>
+//                       </div>
+//                     </div>
+
+//                     <p className="text-[10px] text-slate-400 leading-relaxed text-center mb-6">
+//                       *Benefits are subject to variant, customer, and campaign eligibility. Exchange,
+//                       scrappage, and loyalty benefits may be combined only where applicable.
+//                     </p>
+
+//                     {/* CTA buttons */}
+//                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+//                       <button
+//                         onClick={() => setModal({ open: true, type: "Offer Enquiry" })}
+//                         className="w-full min-h-[52px] bg-[#004b8d] hover:bg-[#00366e] active:scale-[0.98] text-white font-black text-sm rounded-xl shadow-lg shadow-[#004b8d]/25 transition-all"
+//                       >
+//                         GET MY OFFER →
+//                       </button>
+//                       <button
+//                         onClick={() => setModal({ open: true, type: "Test Drive" })}
+//                         className="w-full min-h-[52px] border-2 border-[#004b8d] text-[#004b8d] hover:bg-[#004b8d]/5 active:scale-[0.98] font-black text-sm rounded-xl transition-all"
+//                       >
+//                         BOOK TEST DRIVE
+//                       </button>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 {/* Back / Reset */}
+//                 <div className="flex items-center justify-center gap-5 mt-5 text-xs font-bold text-slate-400">
+//                   <button onClick={goBack} className="hover:text-[#004b8d] transition-colors hover:underline underline-offset-4">
+//                     ← Change Selection
+//                   </button>
+//                   <span className="text-slate-300">|</span>
+//                   <button onClick={reset} className="hover:text-[#004b8d] transition-colors hover:underline underline-offset-4">
+//                     Start Over
+//                   </button>
+//                 </div>
+//               </motion.div>
+//             )}
+
+//             {/* ── NO MATCH ──────────────────────────────────────── */}
+//             {selectedCar && selectedPowertrain && !finalOffer && matchingOffers.length === 0 && (
+//               <motion.div key="no-match" {...motion_step} className="text-center py-14 max-w-sm mx-auto">
+//                 <div className="w-14 h-14 rounded-2xl bg-[#004b8d]/8 flex items-center justify-center mx-auto mb-4 text-2xl">
+//                   🔍
+//                 </div>
+//                 <h3 className="text-lg font-black text-slate-800 mb-2">No Specific Offer Found</h3>
+//                 <p className="text-sm text-slate-500 mb-7 leading-relaxed font-medium">
+//                   Our team can verify the latest applicable benefits for your exact requirement.
+//                 </p>
+//                 <button
+//                   onClick={() => setModal({ open: true, type: "Offer Enquiry" })}
+//                   className="w-full min-h-[48px] bg-[#004b8d] hover:bg-[#00366e] font-black text-sm rounded-xl text-white transition-colors shadow-lg shadow-[#004b8d]/20 mb-4"
+//                 >
+//                   Talk to Garud Tata
+//                 </button>
+//                 <button onClick={reset} className="text-xs text-slate-400 hover:text-[#004b8d] font-bold hover:underline underline-offset-4 transition-colors">
+//                   Start Over
+//                 </button>
+//               </motion.div>
+//             )}
+
+//           </AnimatePresence>
+//         </div>
+//       </div>
+
+//       {/* ── TRUST BAR ──────────────────────────────────────────────── */}
+//       <div className="max-w-3xl mx-auto mt-10 text-center">
+//         <div className="flex flex-wrap items-center justify-center gap-y-2.5 gap-x-5 text-[11px] font-bold text-slate-400">
+//           {[
+//             "Verified Garud Offers",
+//             "MY25 / MY24 Benefits",
+//             "Exchange & Scrappage",
+//             "Test Drive Available",
+//           ].map((t) => (
+//             <span key={t} className="flex items-center gap-1.5">
+//               <span className="text-emerald-500">✓</span> {t}
+//             </span>
+//           ))}
+//         </div>
+//         <p className="text-[10px] text-slate-400 font-semibold mt-5 uppercase tracking-widest">
+//           Offers Last Updated: {LAST_UPDATED}
+//         </p>
+//       </div>
+
+//       {/* ── MODAL ─────────────────────────────────────────────────── */}
+//       <OfferEnquiryModal
+//         isOpen={modal.open}
+//         onClose={() => setModal((p) => ({ ...p, open: false }))}
+//         selectedCar={selectedCar ?? "Tata Car"}
+//         enquiryType={modal.type}
+//         offerDetails={finalOffer}
+//       />
+//     </section>
+//   );
+
+//   function handleSelectPowertrain(pt: Powertrain) {
+//     setSelectedPowertrain(pt);
+//     setSelectedVariantId(null);
+//   }
+// }
+
+// // ── Small reusable benefit chip ───────────────────────────────────────────────
+// function BenefitChip({ label, value }: { label: string; value: number }) {
+//   return (
+//     <div className="flex flex-col px-3.5 py-3 rounded-xl bg-slate-50 border border-slate-100">
+//       <span className="text-[10px] text-slate-500 font-semibold leading-tight">{label}</span>
+//       <span className="text-sm font-black text-slate-800 mt-0.5">{formatINR(value)}</span>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
@@ -2310,12 +3108,13 @@ import {
   AnimatePresence,
   useReducedMotion,
   animate,
+  type Easing,
 } from "framer-motion";
 import {
   OFFERS,
   TataOffer,
   Powertrain,
-} from "@/lib/tata-offers";
+} from "@/lib/offersdata";
 
 // ============================================================================
 // LOCAL HELPERS & TYPES
@@ -2746,8 +3545,8 @@ export default function Offers() {
 
   const motion_step = {
     initial: prefersReduced ? {} : { opacity: 0, y: 16 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
-    exit:    prefersReduced ? {} : { opacity: 0, y: -10, transition: { duration: 0.2 } },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" as Easing } },
+    exit:    prefersReduced ? {} : { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" as Easing } },
   };
 
   return (

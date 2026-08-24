@@ -8,7 +8,7 @@ export interface TataOffer {
   id: string;
 
   // Customer-facing model
-  model: string;
+  model: string
 
   // Petrol / CNG / Diesel / Electric
   powertrain: Powertrain;
