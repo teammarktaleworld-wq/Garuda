@@ -51,21 +51,21 @@ export default function Home() {
         <Offers />
       </div>
 
-      <VehicleShowcase />
-
+      {/* <VehicleShowcase /> */}
+{/* 
       <div id="cars">
         <VehicleGrid />
-      </div>
+      </div> */}
 
-      <FeaturedVehicle />
+      {/* <FeaturedVehicle /> */}
       <WhyGarudTata />
 
-      <div id="test-drive">
+      {/* <div id="test-drive">
         <TestDrive />
-      </div>
+      </div> */}
 
       <About />
-      <Testimonials />
+      {/* <Testimonials /> */}
       {/* <FinanceCalculator /> */}
 
       <div id="showrooms">
