@@ -1,5 +1,4 @@
-// garud-tata\lib\tata-offers.ts
-
+// garud-tata\lib\offersdata.ts
 export type Powertrain = "Petrol" | "CNG" | "Diesel" | "Electric";
 
 export type OfferCategory = "ICE" | "EV";
