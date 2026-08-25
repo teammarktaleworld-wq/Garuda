@@ -461,6 +461,7 @@ const CAR_IMAGES: Record<string, string> = {
   harrier:      "/Car images/Tata harrier/image1.avif",
   "harrier-ev": "/Car images/Tata harrier/image1.avif",
   safari:       "/Car images/Tata safari/image1.avif",
+  sierra:       "/Car images/Tata sierra/image1.avif",
 };
 
 function getCarImage(model: string, isEV = false) {
