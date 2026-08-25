@@ -84,9 +84,71 @@
 
 
 
+// import { NextRequest, NextResponse } from "next/server";
+// import { db } from "@/lib/firebase";
+// import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
+// interface EnquiryBody {
+//   name: string;
+//   mobile: string;
+//   car?: string;
+//   variant?: string;
+//   type?: string;
+//   showroom?: string;
+//   source?: string;
+// }
+
+// export async function POST(req: NextRequest) {
+//   try {
+//     const body: EnquiryBody = await req.json();
+//     const { name, mobile, car, variant, type, showroom, source } = body;
+
+//     if (!name || name.trim().length < 2) {
+//       return NextResponse.json({ error: "Valid name is required." }, { status: 400 });
+//     }
+
+//     const cleanMobile = mobile?.replace(/\D/g, "");
+//     if (!cleanMobile || cleanMobile.length < 10) {
+//       return NextResponse.json({ error: "Valid 10-digit mobile number is required." }, { status: 400 });
+//     }
+
+//     const docRef = await addDoc(collection(db, "enquiries"), {
+//       name:     name.trim(),
+//       mobile:   cleanMobile,
+//       car:      car?.trim()      || null,
+//       variant:  variant?.trim()  || null,
+//       type:     type?.trim()     || "Get Offer",
+//       showroom: showroom?.trim() || null,
+//       source:   source?.trim()   || "website",
+//       status:   "new",
+//       createdAt: serverTimestamp(),
+//       updatedAt: serverTimestamp(),
+//     });
+
+//     return NextResponse.json({ success: true, id: docRef.id }, { status: 201 });
+//   } catch (err) {
+//     console.error("[/api/enquiry] Error:", err);
+//     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+//   }
+// }
+
+// export async function GET() {
+//   return NextResponse.json({ ok: true, endpoint: "POST /api/enquiry" });
+// }
+
+
+
+// garud-tata\app\api\enquiry\route.ts
+
+
+
+
+
+// app/api/enquiry/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { appendToSheet } from "@/lib/googleSheets";
 
 interface EnquiryBody {
   name: string;
@@ -103,27 +165,48 @@ export async function POST(req: NextRequest) {
     const body: EnquiryBody = await req.json();
     const { name, mobile, car, variant, type, showroom, source } = body;
 
-    if (!name || name.trim().length < 2) {
+    if (!name || name.trim().length < 2)
       return NextResponse.json({ error: "Valid name is required." }, { status: 400 });
-    }
 
     const cleanMobile = mobile?.replace(/\D/g, "");
-    if (!cleanMobile || cleanMobile.length < 10) {
+    if (!cleanMobile || cleanMobile.length < 10)
       return NextResponse.json({ error: "Valid 10-digit mobile number is required." }, { status: 400 });
-    }
 
+    const now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+
+    // 1 — Firebase
     const docRef = await addDoc(collection(db, "enquiries"), {
-      name:     name.trim(),
-      mobile:   cleanMobile,
-      car:      car?.trim()      || null,
-      variant:  variant?.trim()  || null,
-      type:     type?.trim()     || "Get Offer",
-      showroom: showroom?.trim() || null,
-      source:   source?.trim()   || "website",
-      status:   "new",
+      name:      name.trim(),
+      mobile:    cleanMobile,
+      car:       car?.trim()      || null,
+      variant:   variant?.trim()  || null,
+      type:      type?.trim()     || "Get Offer",
+      showroom:  showroom?.trim() || null,
+      source:    source?.trim()   || "website",
+      status:    "new",
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
+
+    // 2 — Google Sheets (non-blocking)
+    try {
+      await appendToSheet(
+        process.env.ENQUIRY_SHEET_ID!,
+        "Sheet1!A:H",
+        [[
+          now,
+          name.trim(),
+          cleanMobile,
+          car?.trim()      || "",
+          variant?.trim()  || "",
+          type?.trim()     || "Get Offer",
+          showroom?.trim() || "",
+          docRef.id,
+        ]]
+      );
+    } catch (sheetErr) {
+      console.error("[/api/enquiry] Google Sheets error:", sheetErr);
+    }
 
     return NextResponse.json({ success: true, id: docRef.id }, { status: 201 });
   } catch (err) {
