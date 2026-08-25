@@ -17,7 +17,7 @@ import {
 /* ══════════════════════════════════════════════════════════════════════
    CONSTANTS
 ══════════════════════════════════════════════════════════════════════ */
-const SALES_PHONE  = "+91 92173 71205";
+const SALES_PHONE  = "+91 9217371204";
 const SALES_HREF   = "tel:+919217371205";
 const CDM_EMAIL    = "cdm@garudtata.com";
 const SERVICE_EMAIL= "service@garudtata.com";
