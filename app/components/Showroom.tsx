@@ -1090,11 +1090,11 @@ const OUTLETS: Outlet[] = [
     name: "Garud Tata Najafgarh",
     shortName: "Najafgarh",
     type: "showroom",
-    address: "Sales – Plot No. 8–11, Najafgarh Rd, Near Sai Baba Mandir, Roshan Garden, Masudabad, Najafgarh, New Delhi, Delhi 110043",
+    address: "Sales – Plot No.13, Najafgarh Rd, near Sai Baba Mandir, Jai Vihar Colony, Masudabad, Najafgarh, New Delhi, Delhi 110043",
     phone: "9217371207",
     email: "sm.najafgarh@garudtata.com",
     hours: "10 AM – 7 PM · Mon – Sun",
-    mapsNav: "https://maps.google.com/?q=Plot+No+8+to+11+Najafgarh+Rd+Near+Sai+Baba+Mandir+Najafgarh+New+Delhi+110043",
+    mapsNav: "https://www.google.com/maps/place/TATA+Motors+Cars+Showroom+-+Najafgarh+-+Garud+Tata/@28.6155054,77.0057263,21z/data=!4m6!3m5!1s0x390d0ff16a803839:0xbda690a23a112970!8m2!3d28.6155992!4d77.0058399!16s%2Fg%2F11z5_mk85s?entry=ttu&g_ep=EgoyMDI2MDgxOS4wIKXMDSoASAFQAw%3D%3D",
   },
   {
     id: "service-dwarka",
@@ -1112,11 +1112,11 @@ const OUTLETS: Outlet[] = [
     name: "Garud Tata Service Centre, Najafgarh",
     shortName: "Najafgarh Service",
     type: "workshop",
-    address: "Service – Plot No. 8–11, Main Najafgarh Road, Near Sai Baba Mandir, Najafgarh, New Delhi, Delhi 110043",
+    address: "Service – Plot No.13, Najafgarh Rd, near Sai Baba Mandir, Jai Vihar Colony, Masudabad, Najafgarh, New Delhi, Delhi 110043",
     phone: "9319198306",
     email: "service@garudtata.com",
     hours: "9 AM – 7 PM · Mon – Sun",
-    mapsNav: "https://maps.google.com/?q=Plot+No+8+to+11+Main+Najafgarh+Road+Near+Sai+Baba+Mandir+Najafgarh+New+Delhi+110043",
+    mapsNav: "https://www.google.com/maps/place/TATA+Motors+Cars+Showroom+-+Najafgarh+-+Garud+Tata/@28.6155054,77.0057263,21z/data=!4m6!3m5!1s0x390d0ff16a803839:0xbda690a23a112970!8m2!3d28.6155992!4d77.0058399!16s%2Fg%2F11z5_mk85s?entry=ttu&g_ep=EgoyMDI2MDgxOS4wIKXMDSoASAFQAw%3D%3D",
   },
 ];
 
@@ -1143,9 +1143,8 @@ function TabBar({ active, onChange }: { active: TabKey; onChange: (t: TabKey) =>
             />
           )}
           <span
-            className={`relative z-10 flex items-center gap-1.5 sm:gap-2 ${
-              active === t ? "text-white" : "text-gray-500 hover:text-gray-900"
-            }`}
+            className={`relative z-10 flex items-center gap-1.5 sm:gap-2 ${active === t ? "text-white" : "text-gray-500 hover:text-gray-900"
+              }`}
           >
             {t === "showroom" ? <Building2 size={14} /> : <Wrench size={14} />}
             {t === "showroom" ? "Showrooms" : "Service"}
@@ -1244,11 +1243,10 @@ function OutletCard({ outlet }: { outlet: Outlet }) {
         <div>
           {/* Badge */}
           <span
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] sm:text-[9.5px] font-black tracking-[0.16em] uppercase mb-3 border ${
-              outlet.type === "showroom"
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] sm:text-[9.5px] font-black tracking-[0.16em] uppercase mb-3 border ${outlet.type === "showroom"
                 ? "bg-[#004b8d]/10 border-[#004b8d]/20 text-[#004b8d]"
                 : "bg-amber-100 border-amber-200 text-amber-700"
-            }`}
+              }`}
           >
             {outlet.type === "showroom" ? (
               <>
@@ -1421,11 +1419,10 @@ export default function Showroom() {
                   key={i}
                   onClick={() => setCurrent(i)}
                   aria-label={`Go to outlet ${i + 1}`}
-                  className={`rounded-full transition-all duration-300 ${
-                    i === current
+                  className={`rounded-full transition-all duration-300 ${i === current
                       ? "w-6 h-2 bg-[#004b8d]"
                       : "w-2 h-2 bg-gray-200 hover:bg-gray-300"
-                  }`}
+                    }`}
                 />
               ))}
             </div>
@@ -1479,11 +1476,10 @@ export default function Showroom() {
                     (o.type === "showroom" ? SHOWROOMS : WORKSHOPS).findIndex((x) => x.id === o.id)
                   );
                 }}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full border text-[12px] font-bold transition-all duration-200 ${
-                  isActive
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full border text-[12px] font-bold transition-all duration-200 ${isActive
                     ? "bg-[#004b8d] border-[#004b8d] text-white shadow-md shadow-[#004b8d]/20"
                     : "bg-white border-gray-200 text-gray-500 hover:text-gray-900 hover:border-gray-300 hover:bg-gray-50"
-                }`}
+                  }`}
               >
                 {o.type === "showroom" ? <Building2 size={12} /> : <Wrench size={12} />}
                 {o.shortName}
@@ -1498,11 +1494,10 @@ export default function Showroom() {
             <button
               key={o.id}
               onClick={() => setCurrent(i)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full border text-[11px] font-bold transition-all duration-200 shadow-sm ${
-                i === current
+              className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full border text-[11px] font-bold transition-all duration-200 shadow-sm ${i === current
                   ? "bg-[#004b8d] border-[#004b8d] text-white"
                   : "bg-white border-gray-200 text-gray-500"
-              }`}
+                }`}
             >
               {o.type === "showroom" ? <Building2 size={12} /> : <Wrench size={12} />}
               {o.shortName}
