@@ -23,7 +23,7 @@ export default function Home() {
     <main>
       {/* ── Navbar ──────────────────────────────────────────────────────── */}
       <CampaignNavbar
-        phone="+919876543210"
+        phone="+919217371204"
     
         offerSectionId="offer-form"
         // logoSrc="/images/logo.png"
