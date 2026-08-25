@@ -49,6 +49,7 @@
 // // ─── COMPONENT ─────────────────────────────────────────────────────────────────
 // export default function CampaignNavbar({
 //   phone = "9876543210",
+//   phone = "9876543210",
 //   vehicle,
 //   logoSrc = "/images/logo.jpg",
 //   offerSectionId = "offer-form",
@@ -410,7 +411,7 @@ const navItemVariants: Variants = {
 };
 
 export default function CampaignNavbar({
-  phone = "9876543210",
+  phone = "9217371204",
   vehicle,
   logoSrc = "/images/logo.jpg",
   offerSectionId = "offer-form",
