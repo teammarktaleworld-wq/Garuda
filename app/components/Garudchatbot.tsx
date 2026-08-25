@@ -6319,7 +6319,7 @@ const SHOWROOMS = [
 ];
 
 const WORKSHOPS = [
-  { id: "w1", name: "Garud Service – Matiala", address: "Shanti Garden, Matiala Industrial Area, Dwarka", phone: "+91 93191 98306", hours: "9:00 AM – 7:00 PM", services: ["Routine Service", "Body Shop", "EV Support", "Genuine Parts"] },
+  { id: "w1", name: "Garud Service – Matiala", address: "Shanti Garden, Matiala Industrial Area, Dwarka", phone: "+91 93191 98306", email: "service.matiala@garudtata.com", hours: "9:00 AM – 7:00 PM", services: ["Routine Service", "Body Shop", "EV Support", "Genuine Parts"] },
 ];
 
 const TEST_DRIVE_SLOTS = ["10:00 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"];

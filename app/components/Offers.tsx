@@ -6855,8 +6855,6 @@
 
 
 
-
-
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
@@ -6879,14 +6877,12 @@ import {
 // ============================================================================
 type EnquiryType = "Offer Enquiry" | "Test Drive";
 
-// ✅ 3 showrooms as requested
 const SHOWROOMS = [
   "Garud Tata Palam",
   "Garud Tata Narela",
   "Garud Tata Najafgarh",
 ];
 
-// Showroom location details for display
 const SHOWROOM_META: Record<string, { area: string; city: string }> = {
   "Garud Tata Palam":      { area: "Palam",      city: "South-West Delhi" },
   "Garud Tata Narela":     { area: "Narela",     city: "North Delhi" },
@@ -6943,11 +6939,11 @@ const getCarImage = (model: string, isEV = false) => {
 };
 
 // Resolve the best detail-page slug for a given car model name.
-// Uses the first active ICE offer for that model, falling back to any active offer.
+// ✅ FIXED: category is "EV" for electric, not "ICE"
 const getCarSlug = (model: string): string | null => {
-  const ice = OFFERS.find((o) => o.active && o.model === model && o.category === "ICE");
-  const any = OFFERS.find((o) => o.active && o.model === model);
-  return (ice ?? any)?.id ?? null;
+  const nonEV = OFFERS.find((o) => o.active && o.model === model && o.category !== "EV");
+  const any   = OFFERS.find((o) => o.active && o.model === model);
+  return (nonEV ?? any)?.id ?? null;
 };
 
 // ============================================================================
@@ -6972,20 +6968,14 @@ function AnimatedCounter({ value }: { value: number }) {
 
 // ============================================================================
 // ENQUIRY MODAL
-// — Car/variant summary card with inline car-change picker
-// — Location (city) field, auto-detected via Geolocation API
-// — Sends `name` + `mobile` to match the API contract
 // ============================================================================
 interface EnquiryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  /** The car the user arrived with (pre-fill). They can change it inside the modal. */
   initialCar: string;
   enquiryType: EnquiryType;
   offerDetails?: TataOffer | null;
-  /** Full list of available car names so the user can switch */
   availableCars: string[];
-  /** Called when user picks a different car inside the modal — parent should update offer details */
   onCarChange?: (car: string) => void;
 }
 
@@ -7007,13 +6997,10 @@ function OfferEnquiryModal({
   const [isSuccess, setSuccess]       = useState(false);
   const [error, setError]             = useState("");
   const [showCarPicker, setShowCarPicker] = useState(false);
-  // Local selected car — starts with whatever the parent passed, user can change
   const [activeCar, setActiveCar]     = useState(initialCar);
 
-  // Keep activeCar in sync if parent reopens modal with a different car
   useEffect(() => { setActiveCar(initialCar); }, [initialCar]);
 
-  // Auto-detect city via reverse-geocode when modal first opens
   useEffect(() => {
     if (!isOpen || location) return;
     if (!navigator.geolocation) return;
@@ -7060,10 +7047,11 @@ function OfferEnquiryModal({
 
     try {
       const w = window as unknown as { fbq?: (...a: unknown[]) => void };
+      // ✅ FIXED: totalBenefit instead of maxOffer
       w.fbq?.("track", "Lead", {
         content_name: activeCar,
         content_category: enquiryType,
-        value: offerDetails?.maxOffer ?? 0,
+        value: offerDetails?.totalBenefit ?? 0,
         currency: "INR",
       });
 
@@ -7074,7 +7062,8 @@ function OfferEnquiryModal({
           name,
           mobile,
           car: activeCar,
-          variant: offerDetails?.variant ?? "General",
+          // ✅ FIXED: variantLabel instead of variant
+          variant: offerDetails?.variantLabel ?? "General",
           type: enquiryType,
           showroom,
           location: location || null,
@@ -7155,7 +7144,6 @@ function OfferEnquiryModal({
                   </button>
                 </div>
 
-                {/* Car picker (inline dropdown) */}
                 {showCarPicker ? (
                   <div className="grid grid-cols-3 gap-2 p-3">
                     {availableCars.map((car) => (
@@ -7188,15 +7176,18 @@ function OfferEnquiryModal({
                     <div className="min-w-0">
                       <p className="text-sm font-black text-slate-800">
                         Tata {activeCar}
+                        {/* ✅ FIXED: category "EV" not "ICE" */}
                         {offerDetails?.category === "EV" && !activeCar.includes("EV") ? " EV" : ""}
                       </p>
                       {offerDetails ? (
                         <>
+                          {/* ✅ FIXED: variantLabel instead of variant */}
                           <p className="text-[11px] text-slate-500 font-semibold truncate">
-                            {offerDetails.variant}
+                            {offerDetails.variantLabel ?? offerDetails.model}
                           </p>
+                          {/* ✅ FIXED: totalBenefit instead of maxOffer */}
                           <p className="text-[11px] font-black text-[#004b8d] mt-0.5">
-                            Up to {formatINR(offerDetails.maxOffer)}
+                            Up to {formatINR(offerDetails.totalBenefit)}
                           </p>
                         </>
                       ) : (
@@ -7257,7 +7248,6 @@ function OfferEnquiryModal({
                     placeholder={locationLoading ? "Detecting your location…" : "e.g. New Delhi, Gurugram"}
                     className="w-full bg-slate-50 border border-slate-200 focus:border-[#004b8d] focus:ring-2 focus:ring-[#004b8d]/20 rounded-xl px-4 py-3 pr-10 text-sm text-slate-800 outline-none transition-all font-medium"
                   />
-                  {/* Location pin icon / spinner */}
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-base">
                     {locationLoading ? (
                       <span className="inline-block w-4 h-4 border-2 border-slate-300 border-t-[#004b8d] rounded-full animate-spin" />
@@ -7358,13 +7348,11 @@ function StepProgress({
 
       {/* Desktop */}
       <div className="hidden sm:flex items-center justify-between relative">
-        {/* Track */}
         <div className="absolute top-3.5 left-0 right-0 h-0.5 bg-slate-200 z-0" />
         <div
           className="absolute top-3.5 left-0 h-0.5 bg-[#004b8d] z-0 transition-all duration-500"
           style={{ width: `${((current - 1) / (total - 1)) * 100}%` }}
         />
-
         {labels.map((label, i) => {
           const step = i + 1;
           const done = step < current;
@@ -7418,7 +7406,6 @@ export default function Offers() {
     return list;
   }, []);
 
-  // Cars visible under the current filter tab
   const filteredCars = useMemo(() => {
     if (carFilter === "All") return availableCars;
     return availableCars.filter((model) =>
@@ -7426,7 +7413,6 @@ export default function Offers() {
     );
   }, [availableCars, carFilter]);
 
-  // Badge counts per filter tab
   const filterCounts = useMemo(() => {
     const counts: Record<string, number> = { All: availableCars.length };
     (["Petrol", "CNG", "Diesel", "Electric"] as const).forEach((pt) => {
@@ -7437,15 +7423,11 @@ export default function Offers() {
     return counts;
   }, [availableCars]);
 
-  // When a filter is active and customer clicks a car, pre-select that powertrain
-  // and skip Step 2. If "All" is active, proceed to Step 2 normally.
   const handleSelectCar = (car: string) => {
     setSelectedVariantId(null);
     if (carFilter !== "All") {
-      // Filter is active — skip the powertrain step entirely
       setSelectedCar(car);
       setSelectedPowertrain(carFilter as Powertrain);
-      // If no offers exist → open enquiry modal immediately
       const matches = OFFERS.filter(
         (o) => o.active && o.model === car && o.powertrain === (carFilter as Powertrain)
       );
@@ -7480,10 +7462,8 @@ export default function Offers() {
     return matchingOffers.find((o) => o.id === selectedVariantId) ?? null;
   }, [selectedCar, selectedPowertrain, matchingOffers, selectedVariantId]);
 
-  // Whether the powertrain step is visible (skipped when filter pre-selected it)
   const powertrainPreSelected = carFilter !== "All";
 
-  // Build step labels dynamically — skip "Powertrain" when pre-selected
   const stepLabels = useMemo(() => {
     const base = powertrainPreSelected
       ? (needsVariant ? ["Car", "Variant", "Offer"] : ["Car", "Offer"])
@@ -7493,7 +7473,7 @@ export default function Offers() {
 
   const currentStep = useMemo(() => {
     if (!selectedCar) return 1;
-    if (!selectedPowertrain) return 2;                       // only reachable when filter="All"
+    if (!selectedPowertrain) return 2;
     if (needsVariant && !selectedVariantId) return powertrainPreSelected ? 2 : 3;
     return stepLabels.length;
   }, [selectedCar, selectedPowertrain, needsVariant, selectedVariantId, powertrainPreSelected, stepLabels.length]);
@@ -7502,10 +7482,7 @@ export default function Offers() {
     if (needsVariant && selectedVariantId) { setSelectedVariantId(null); return; }
     if (selectedPowertrain) {
       setSelectedPowertrain(null);
-      if (powertrainPreSelected) {
-        // Re-entering car grid — clear car too so filter still applies
-        setSelectedCar(null);
-      }
+      if (powertrainPreSelected) setSelectedCar(null);
       return;
     }
     setSelectedCar(null);
@@ -7526,7 +7503,7 @@ export default function Offers() {
 
   return (
     <section className="min-h-screen bg-slate-100 py-10 px-4 sm:px-6 font-sans">
-      {/* ── HERO ─────────────────────────────────────────────────── */}
+      {/* ── HERO ── */}
       <div className="max-w-4xl mx-auto text-center mb-8">
         <span className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-[#004b8d] bg-white border border-[#004b8d]/20 px-4 py-1.5 rounded-full mb-4 shadow-sm">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -7540,21 +7517,21 @@ export default function Offers() {
         </p>
       </div>
 
-      {/* ── MAIN CARD ─────────────────────────────────────────────── */}
+      {/* ── MAIN CARD ── */}
       <div className="max-w-[960px] mx-auto bg-white border border-slate-200 rounded-3xl shadow-xl shadow-slate-200/80 overflow-hidden">
         <StepProgress current={currentStep} total={stepLabels.length} labels={stepLabels} />
 
         <div className="p-5 sm:p-8 md:p-10">
           <AnimatePresence mode="wait">
 
-            {/* ── STEP 1 : CAR GRID ─────────────────────────────── */}
+            {/* ── STEP 1 : CAR GRID ── */}
             {!selectedCar && (
               <motion.div key="step-car" {...motion_step}>
                 <h2 className="text-lg sm:text-xl font-black text-slate-800 mb-5 text-center">
                   Which Tata are you interested in?
                 </h2>
 
-                {/* ── Filter bar ── */}
+                {/* Filter bar */}
                 <div className="flex items-center gap-2 flex-wrap justify-center mb-6">
                   {([
                     { key: "All",      label: "All Cars", icon: "🚗" },
@@ -7565,7 +7542,7 @@ export default function Offers() {
                   ] as const).map(({ key, label, icon }) => {
                     const count   = filterCounts[key] ?? 0;
                     const active  = carFilter === key;
-                    if (count === 0) return null; // hide tabs with no matches
+                    if (count === 0) return null;
                     return (
                       <button
                         key={key}
@@ -7588,7 +7565,7 @@ export default function Offers() {
                   })}
                 </div>
 
-                {/* ── Car grid ── */}
+                {/* Car grid */}
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={carFilter}
@@ -7603,7 +7580,6 @@ export default function Offers() {
                       </div>
                     ) : filteredCars.map((car) => {
                       const slug = getCarSlug(car);
-                      // Which powertrains does this car have? Show small badges
                       const pts = Array.from(
                         new Set(OFFERS.filter((o) => o.active && o.model === car).map((o) => o.powertrain))
                       );
@@ -7615,9 +7591,8 @@ export default function Offers() {
                           key={car}
                           className="group relative rounded-2xl border border-slate-200 hover:border-[#004b8d] bg-white shadow-sm hover:shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-0.5 flex flex-col"
                         >
-                          {/* Image + label — selects car */}
                           <button
-                            onClick={() => { setSelectedCar(car); setSelectedPowertrain(null); setSelectedVariantId(null); }}
+                            onClick={() => handleSelectCar(car)}
                             className="text-left flex-1 focus-visible:ring-2 focus-visible:ring-[#004b8d] focus-visible:outline-none rounded-t-2xl"
                           >
                             <div className="relative h-28 sm:h-32 bg-slate-100 overflow-hidden">
@@ -7628,7 +7603,6 @@ export default function Offers() {
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                               />
                               <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white/50 to-transparent" />
-                              {/* Powertrain badge pills on image */}
                               <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
                                 {pts.map((pt) => (
                                   <span
@@ -7650,10 +7624,9 @@ export default function Offers() {
                             </div>
                           </button>
 
-                          {/* Bottom action row */}
                           <div className="flex items-center border-t border-slate-100 divide-x divide-slate-100">
                             <button
-                              onClick={() => { setSelectedCar(car); setSelectedPowertrain(null); setSelectedVariantId(null); }}
+                              onClick={() => handleSelectCar(car)}
                               className="flex-1 py-2 text-[11px] font-black text-[#004b8d] hover:bg-[#004b8d]/5 transition-colors text-center"
                             >
                               Check Offer
@@ -7671,7 +7644,6 @@ export default function Offers() {
                             )}
                           </div>
 
-                          {/* Hover accent bar */}
                           <div className="absolute bottom-0 inset-x-0 h-0.5 bg-[#004b8d] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
                         </div>
                       );
@@ -7681,7 +7653,7 @@ export default function Offers() {
               </motion.div>
             )}
 
-            {/* ── STEP 2 : POWERTRAIN ───────────────────────────── */}
+            {/* ── STEP 2 : POWERTRAIN ── */}
             {selectedCar && !selectedPowertrain && (
               <motion.div key="step-pt" {...motion_step}>
                 <div className="text-center mb-8">
@@ -7721,7 +7693,7 @@ export default function Offers() {
               </motion.div>
             )}
 
-            {/* ── STEP 3 : VARIANT (conditional) ───────────────── */}
+            {/* ── STEP 3 : VARIANT (conditional) ── */}
             {selectedCar && selectedPowertrain && needsVariant && !selectedVariantId && (
               <motion.div key="step-var" {...motion_step}>
                 <div className="text-center mb-8">
@@ -7744,14 +7716,16 @@ export default function Offers() {
                       className="w-full flex items-center justify-between px-5 py-4 rounded-2xl border border-slate-200 hover:border-[#004b8d] bg-white hover:bg-[#004b8d]/4 transition-all shadow-sm hover:shadow-md text-left group focus-visible:ring-2 focus-visible:ring-[#004b8d]"
                     >
                       <div>
+                        {/* ✅ FIXED: variantLabel instead of variant */}
                         <p className="text-sm font-bold text-slate-800 group-hover:text-[#004b8d] transition-colors">
-                          {offer.variant}
+                          {offer.variantLabel ?? offer.model}
                         </p>
                         <p className="text-xs text-slate-400 font-semibold mt-0.5">{offer.modelYear} Edition</p>
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] uppercase font-bold tracking-wider text-[#004b8d]/50">Up to</p>
-                        <p className="text-base font-black text-[#004b8d]">{formatINR(offer.maxOffer)}</p>
+                        {/* ✅ FIXED: totalBenefit instead of maxOffer */}
+                        <p className="text-base font-black text-[#004b8d]">{formatINR(offer.totalBenefit)}</p>
                       </div>
                     </button>
                   ))}
@@ -7765,36 +7739,34 @@ export default function Offers() {
               </motion.div>
             )}
 
-            {/* ── STEP 4 : OFFER RESULT ─────────────────────────── */}
+            {/* ── STEP 4 : OFFER RESULT ── */}
             {finalOffer && (
               <motion.div key="step-result" {...motion_step} className="max-w-xl mx-auto">
-                {/* ── Offer Hero Card ── */}
                 <div className="rounded-3xl overflow-hidden border border-slate-200 shadow-xl shadow-slate-200/60">
 
-                  {/* Hero Banner: deep navy with diagonal accent, car image overlay */}
+                  {/* Hero Banner */}
                   <div className="relative h-52 sm:h-60 overflow-hidden bg-[#003570]">
-                    {/* Geometric accent – adds depth without muddiness */}
                     <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-[#0059a8]/50" />
                     <div className="absolute -left-10 -bottom-10 w-48 h-48 rounded-full bg-[#002a58]/60" />
 
-                    {/* Car image — subtle, not overwhelming */}
                     <img
                       src={getCarImage(finalOffer.model, finalOffer.powertrain === "Electric")}
                       alt={`Tata ${finalOffer.model}`}
                       className="absolute inset-0 w-full h-full object-cover opacity-35 mix-blend-luminosity"
                     />
 
-                    {/* Content overlay */}
                     <div className="absolute inset-0 flex flex-col justify-end p-6">
                       <p className="text-[10px] uppercase font-black tracking-[0.25em] text-blue-300/80 mb-1">
                         Your Garud Tata Offer
                       </p>
                       <h2 className="text-3xl sm:text-4xl font-black text-white leading-none">
                         Tata {finalOffer.model}
+                        {/* ✅ FIXED: category "EV" not "ICE" */}
                         {finalOffer.category === "EV" && !finalOffer.model.includes("EV") ? " EV" : ""}
                       </h2>
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {[finalOffer.variant, finalOffer.powertrain, finalOffer.modelYear].map((tag) => (
+                        {/* ✅ FIXED: variantLabel instead of variant */}
+                        {[finalOffer.variantLabel ?? finalOffer.model, finalOffer.powertrain, finalOffer.modelYear].map((tag) => (
                           <span
                             key={tag}
                             className="text-[10px] font-bold uppercase tracking-wider bg-white/15 text-white/90 px-2.5 py-1 rounded-full"
@@ -7815,7 +7787,8 @@ export default function Offers() {
                       </p>
                       <p className="text-4xl sm:text-5xl font-black text-[#004b8d] leading-none">
                         <span className="text-lg align-middle font-bold text-[#004b8d]/60 mr-1">UP TO</span>
-                        <AnimatedCounter value={finalOffer.maxOffer} />
+                        {/* ✅ FIXED: totalBenefit instead of maxOffer */}
+                        <AnimatedCounter value={finalOffer.totalBenefit} />
                       </p>
                     </div>
 
@@ -7825,24 +7798,26 @@ export default function Offers() {
                         Benefit Breakdown
                       </p>
                       <div className="grid grid-cols-2 gap-2.5">
-                        {finalOffer.cash > 0 && (
-                          <BenefitChip label="Consumer Discount" value={finalOffer.cash} />
+                        {/* ✅ FIXED: consumerOffer instead of cash, with null guards on optional fields */}
+                        {(finalOffer.consumerOffer ?? 0) > 0 && (
+                          <BenefitChip label="Consumer Discount" value={finalOffer.consumerOffer!} />
                         )}
-                        {finalOffer.exchangeBenefit > 0 && (
-                          <BenefitChip label="Exchange Bonus" value={finalOffer.exchangeBenefit} />
+                        {(finalOffer.exchangeBenefit ?? 0) > 0 && (
+                          <BenefitChip label="Exchange Bonus" value={finalOffer.exchangeBenefit!} />
                         )}
-                        {finalOffer.scrappageBenefit > 0 && (
-                          <BenefitChip label="Scrappage Bonus" value={finalOffer.scrappageBenefit} />
+                        {(finalOffer.scrappageBenefit ?? 0) > 0 && (
+                          <BenefitChip label="Scrappage Bonus" value={finalOffer.scrappageBenefit!} />
                         )}
-                        {finalOffer.loyaltyBenefit > 0 && (
-                          <BenefitChip label="Loyalty Reward" value={finalOffer.loyaltyBenefit} />
+                        {(finalOffer.loyaltyBenefit ?? 0) > 0 && (
+                          <BenefitChip label="Loyalty Reward" value={finalOffer.loyaltyBenefit!} />
                         )}
                       </div>
 
                       {/* Total row */}
                       <div className="flex items-center justify-between mt-3 px-4 py-3.5 rounded-xl bg-[#004b8d] text-white shadow-lg shadow-[#004b8d]/20">
                         <span className="font-bold text-sm">Total Benefits</span>
-                        <span className="font-black text-lg">{formatINR(finalOffer.maxOffer)}</span>
+                        {/* ✅ FIXED: totalBenefit instead of maxOffer */}
+                        <span className="font-black text-lg">{formatINR(finalOffer.totalBenefit)}</span>
                       </div>
                     </div>
 
@@ -7867,7 +7842,7 @@ export default function Offers() {
                       </button>
                     </div>
 
-                    {/* Explore Detail Page link */}
+                    {/* Explore detail page */}
                     <div className="mt-3">
                       <Link
                         href={`/offers/${finalOffer.id}`}
@@ -7896,7 +7871,7 @@ export default function Offers() {
               </motion.div>
             )}
 
-            {/* ── NO MATCH ──────────────────────────────────────── */}
+            {/* ── NO MATCH ── */}
             {selectedCar && selectedPowertrain && !finalOffer && matchingOffers.length === 0 && (
               <motion.div key="no-match" {...motion_step} className="text-center py-14 max-w-sm mx-auto">
                 <div className="w-14 h-14 rounded-2xl bg-[#004b8d]/8 flex items-center justify-center mx-auto mb-4 text-2xl">
@@ -7922,7 +7897,7 @@ export default function Offers() {
         </div>
       </div>
 
-      {/* ── TRUST BAR ──────────────────────────────────────────────── */}
+      {/* ── TRUST BAR ── */}
       <div className="max-w-3xl mx-auto mt-10 text-center">
         <div className="flex flex-wrap items-center justify-center gap-y-2.5 gap-x-5 text-[11px] font-bold text-slate-400">
           {[
@@ -7941,7 +7916,7 @@ export default function Offers() {
         </p>
       </div>
 
-      {/* ── MODAL ─────────────────────────────────────────────────── */}
+      {/* ── MODAL ── */}
       <OfferEnquiryModal
         isOpen={modal.open}
         onClose={() => setModal((p) => ({ ...p, open: false }))}
@@ -7964,7 +7939,7 @@ export default function Offers() {
   }
 }
 
-// ── Small reusable benefit chip ───────────────────────────────────────────────
+// ── Benefit chip ──────────────────────────────────────────────────────────────
 function BenefitChip({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex flex-col px-3.5 py-3 rounded-xl bg-slate-50 border border-slate-100">
