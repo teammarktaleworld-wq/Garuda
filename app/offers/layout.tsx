@@ -12,7 +12,7 @@ export default function OffersLayout({
     <>
       {/* Permanent Offer Campaign Navbar */}
       <CampaignNavbar
-        phone="+919876543210"
+        phone="+919217371204"
         offerSectionId="offers"
       />
       <GarudChatbot />
