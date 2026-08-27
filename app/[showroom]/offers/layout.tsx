@@ -1,7 +1,6 @@
-// app/offers/layout.tsx
-
+// garud-tata\app\[showroom]\offers\layout.tsx
 import CampaignNavbar from "@/app/components/CampaignNavbar";
-import GarudChatbot from "../components/Garudchatbot";
+import GarudChatbot from "../../components/Garudchatbot";
 
 export default function OffersLayout({
   children,
