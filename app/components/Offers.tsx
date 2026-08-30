@@ -1,6 +1,10 @@
 
 
 
+
+
+
+
 // "use client";
 
 // import React, { useState, useMemo, useEffect } from "react";
@@ -95,7 +99,7 @@
 // // ANIMATED COUNTER
 // // ============================================================================
 // function AnimatedCounter({ value }: { value: number }) {
-//   const prefersReduced      = useReducedMotion();
+//   const prefersReduced        = useReducedMotion();
 //   const [display, setDisplay] = useState(prefersReduced ? value : 0);
 
 //   useEffect(() => {
@@ -133,22 +137,22 @@
 //   availableCars,
 //   onCarChange,
 // }: EnquiryModalProps) {
-//   const [name,            setName]       = useState("");
-//   const [mobile,          setMobile]     = useState("");
-//   const [location,        setLocation]   = useState("");
-//   const [locationLoading, setLocLoad]    = useState(false);
-//   const [showroom,        setShowroom]   = useState(SHOWROOMS[0]);
-//   const [isSubmitting,    setSubmitting] = useState(false);
-//   const [isSuccess,       setSuccess]    = useState(false);
-//   const [error,           setError]      = useState("");
+//   const [name,            setName]          = useState("");
+//   const [mobile,          setMobile]        = useState("");
+//   const [location,        setLocation]      = useState("");
+//   const [locationLoading, setLocLoad]       = useState(false);
+//   const [showroom,        setShowroom]      = useState(SHOWROOMS[0]);
+//   const [isSubmitting,    setSubmitting]    = useState(false);
+//   const [isSuccess,       setSuccess]       = useState(false);
+//   const [error,           setError]         = useState("");
 //   const [showCarPicker,   setShowCarPicker] = useState(false);
-//   const [activeCar,       setActiveCar]  = useState(initialCar);
+//   const [activeCar,       setActiveCar]     = useState(initialCar);
 
 //   useEffect(() => { setActiveCar(initialCar); }, [initialCar]);
 
 //   useEffect(() => {
 //     if (!isOpen || location) return;
-//     if (!navigator.geolocation)  return;
+//     if (!navigator.geolocation) return;
 //     setLocLoad(true);
 //     navigator.geolocation.getCurrentPosition(
 //       async ({ coords }) => {
@@ -191,7 +195,12 @@
 //     setError("");
 
 //     try {
-//       const w = window as unknown as { fbq?: (...a: unknown[]) => void };
+//       const w = window as unknown as {
+//         fbq?:  (...a: unknown[]) => void;
+//         gtag?: (...a: unknown[]) => void;
+//       };
+
+//       // Meta Pixel — Lead event
 //       w.fbq?.("track", "Lead", {
 //         content_name:     activeCar,
 //         content_category: enquiryType,
@@ -199,7 +208,7 @@
 //         currency:         "INR",
 //       });
 
-//       await fetch("/api/enquiry", {
+//       const res = await fetch("/api/enquiry", {
 //         method:  "POST",
 //         headers: { "Content-Type": "application/json" },
 //         body: JSON.stringify({
@@ -214,8 +223,17 @@
 //         }),
 //       });
 
+//       const data = await res.json().catch(() => ({}));
+//       if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
+
+//       // ✅ Google Ads conversion tracking
+//       w.gtag?.("event", "conversion", {
+//         send_to: "AW-18209967669/FeICCNezs-gcELWcmOtD",
+//       });
+
 //       setSuccess(true);
 //     } catch {
+//       // Still show success to user — lead likely captured
 //       setSuccess(true);
 //     } finally {
 //       setSubmitting(false);
@@ -229,15 +247,13 @@
 //         aria-modal="true"
 //         className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col max-h-[92dvh] sm:max-h-[90vh]"
 //       >
-//         {/* ── Fixed header ── */}
+//         {/* ── Header ── */}
 //         <div className="bg-[#004b8d] px-5 py-4 flex items-center justify-between shrink-0 rounded-t-3xl sm:rounded-t-2xl">
 //           <div>
 //             <p className="text-[10px] uppercase tracking-widest font-bold text-blue-200">
 //               {enquiryType === "Test Drive" ? "Book a Test Drive" : "Claim Your Offer"}
 //             </p>
-//             <p className="text-white font-black text-base leading-tight">
-//               Tata {activeCar}
-//             </p>
+//             <p className="text-white font-black text-base leading-tight">Tata {activeCar}</p>
 //           </div>
 //           <button
 //             onClick={onClose}
@@ -248,7 +264,7 @@
 //           </button>
 //         </div>
 
-//         {/* ── Scrollable body ── */}
+//         {/* ── Body ── */}
 //         <div className="overflow-y-auto flex-1 p-5">
 //           {isSuccess ? (
 //             <div className="text-center py-8">
@@ -271,7 +287,7 @@
 //           ) : (
 //             <form onSubmit={handleSubmit} className="space-y-4">
 
-//               {/* ── Car & Variant summary card ── */}
+//               {/* ── Car summary card ── */}
 //               <div className="rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
 //                 <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-200 bg-white">
 //                   <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
@@ -300,11 +316,7 @@
 //                             : "border-slate-200 bg-white text-slate-600 hover:border-[#004b8d]/50"
 //                         }`}
 //                       >
-//                         <img
-//                           src={getCarImage(car)}
-//                           alt={car}
-//                           className="w-14 h-9 object-cover rounded mb-1"
-//                         />
+//                         <img src={getCarImage(car)} alt={car} className="w-14 h-9 object-cover rounded mb-1" />
 //                         {car}
 //                       </button>
 //                     ))}
@@ -350,9 +362,7 @@
 //                   Your Name
 //                 </label>
 //                 <input
-//                   type="text"
-//                   required
-//                   value={name}
+//                   type="text" required value={name}
 //                   onChange={(e) => setName(e.target.value)}
 //                   placeholder="Enter your full name"
 //                   className="w-full bg-slate-50 border border-slate-200 focus:border-[#004b8d] focus:ring-2 focus:ring-[#004b8d]/20 rounded-xl px-4 py-3 text-sm text-slate-800 outline-none transition-all font-medium"
@@ -365,10 +375,7 @@
 //                   Mobile Number
 //                 </label>
 //                 <input
-//                   type="tel"
-//                   required
-//                   maxLength={10}
-//                   value={mobile}
+//                   type="tel" required maxLength={10} value={mobile}
 //                   onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
 //                   placeholder="10-digit mobile number"
 //                   className="w-full bg-slate-50 border border-slate-200 focus:border-[#004b8d] focus:ring-2 focus:ring-[#004b8d]/20 rounded-xl px-4 py-3 text-sm text-slate-800 outline-none transition-all font-medium"
@@ -382,8 +389,7 @@
 //                 </label>
 //                 <div className="relative">
 //                   <input
-//                     type="text"
-//                     value={location}
+//                     type="text" value={location}
 //                     onChange={(e) => setLocation(e.target.value)}
 //                     placeholder={locationLoading ? "Detecting your location…" : "e.g. New Delhi, Gurugram"}
 //                     className="w-full bg-slate-50 border border-slate-200 focus:border-[#004b8d] focus:ring-2 focus:ring-[#004b8d]/20 rounded-xl px-4 py-3 pr-10 text-sm text-slate-800 outline-none transition-all font-medium"
@@ -391,9 +397,7 @@
 //                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-base">
 //                     {locationLoading ? (
 //                       <span className="inline-block w-4 h-4 border-2 border-slate-300 border-t-[#004b8d] rounded-full animate-spin" />
-//                     ) : (
-//                       "📍"
-//                     )}
+//                     ) : "📍"}
 //                   </span>
 //                 </div>
 //                 <p className="text-[10px] text-slate-400 mt-1 font-medium">
@@ -465,13 +469,9 @@
 // // STEP PROGRESS BAR
 // // ============================================================================
 // function StepProgress({
-//   current,
-//   total,
-//   labels,
+//   current, total, labels,
 // }: {
-//   current: number;
-//   total:   number;
-//   labels:  string[];
+//   current: number; total: number; labels: string[];
 // }) {
 //   return (
 //     <div className="px-5 sm:px-8 py-4 border-b border-slate-200 bg-white">
@@ -485,7 +485,6 @@
 //         </div>
 //         <span className="text-slate-400 font-semibold">{current} / {total}</span>
 //       </div>
-
 //       {/* Desktop */}
 //       <div className="hidden sm:flex items-center justify-between relative">
 //         <div className="absolute top-3.5 left-0 right-0 h-0.5 bg-slate-200 z-0" />
@@ -494,27 +493,17 @@
 //           style={{ width: `${((current - 1) / (total - 1)) * 100}%` }}
 //         />
 //         {labels.map((label, i) => {
-//           const step   = i + 1;
-//           const done   = step < current;
-//           const active = step === current;
+//           const step = i + 1; const done = step < current; const active = step === current;
 //           return (
 //             <div key={label} className="relative z-10 flex flex-col items-center gap-1.5">
-//               <span
-//                 className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-black transition-all duration-300 ${
-//                   done
-//                     ? "bg-[#004b8d] text-white"
-//                     : active
-//                     ? "bg-[#004b8d] text-white ring-4 ring-[#004b8d]/20"
-//                     : "bg-slate-100 text-slate-400 border border-slate-200"
-//                 }`}
-//               >
+//               <span className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-black transition-all duration-300 ${
+//                 done ? "bg-[#004b8d] text-white" : active ? "bg-[#004b8d] text-white ring-4 ring-[#004b8d]/20" : "bg-slate-100 text-slate-400 border border-slate-200"
+//               }`}>
 //                 {done ? "✓" : step}
 //               </span>
-//               <span
-//                 className={`text-[10px] font-bold uppercase tracking-wider ${
-//                   active ? "text-[#004b8d]" : done ? "text-slate-500" : "text-slate-300"
-//                 }`}
-//               >
+//               <span className={`text-[10px] font-bold uppercase tracking-wider ${
+//                 active ? "text-[#004b8d]" : done ? "text-slate-500" : "text-slate-300"
+//               }`}>
 //                 {label}
 //               </span>
 //             </div>
@@ -528,10 +517,16 @@
 // // ============================================================================
 // // MAIN OFFERS COMPONENT
 // // ============================================================================
-// export default function Offers() {
+// interface OffersProps {
+//   showroomSlug?: string;
+// }
+
+// export default function Offers({ showroomSlug = "palam" }: OffersProps) {
 //   const prefersReduced = useReducedMotion();
-//   const params         = useParams();
-//   const showroom       = (params?.showroom as string) ?? "palam";
+
+//   // Prefer URL param (detail pages), fall back to prop (landing page)
+//   const params   = useParams();
+//   const showroom = (params?.showroom as string) ?? showroomSlug;
 
 //   const [selectedCar,        setSelectedCar]        = useState<string | null>(null);
 //   const [selectedPowertrain, setSelectedPowertrain] = useState<Powertrain | null>(null);
@@ -613,7 +608,7 @@
 //   }, [powertrainPreSelected, needsVariant]);
 
 //   const currentStep = useMemo(() => {
-//     if (!selectedCar)       return 1;
+//     if (!selectedCar)        return 1;
 //     if (!selectedPowertrain) return 2;
 //     if (needsVariant && !selectedVariantId) return powertrainPreSelected ? 2 : 3;
 //     return stepLabels.length;
@@ -746,10 +741,7 @@
 //                               <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white/50 to-transparent" />
 //                               <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
 //                                 {pts.map((pt) => (
-//                                   <span
-//                                     key={pt}
-//                                     className="text-[9px] font-bold bg-white/90 text-slate-700 px-1.5 py-0.5 rounded-full leading-tight shadow-sm"
-//                                   >
+//                                   <span key={pt} className="text-[9px] font-bold bg-white/90 text-slate-700 px-1.5 py-0.5 rounded-full leading-tight shadow-sm">
 //                                     {ptEmoji[pt]} {pt}
 //                                   </span>
 //                                 ))}
@@ -801,11 +793,8 @@
 //                   <span className="inline-block text-xs font-black uppercase tracking-wider bg-[#004b8d]/8 text-[#004b8d] px-3 py-1 rounded-full mb-3">
 //                     {selectedCar}
 //                   </span>
-//                   <h2 className="text-lg sm:text-xl font-black text-slate-800">
-//                     Fuel or powertrain type?
-//                   </h2>
+//                   <h2 className="text-lg sm:text-xl font-black text-slate-800">Fuel or powertrain type?</h2>
 //                 </div>
-
 //                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
 //                   {availablePowertrains.map((pt) => (
 //                     <button
@@ -816,42 +805,31 @@
 //                       <span className="text-2xl">
 //                         {pt === "Electric" ? "⚡" : pt === "Petrol" ? "⛽" : pt === "Diesel" ? "🔧" : "🔋"}
 //                       </span>
-//                       <span className="text-sm font-black text-slate-800 group-hover:text-[#004b8d] transition-colors">
-//                         {pt}
-//                       </span>
+//                       <span className="text-sm font-black text-slate-800 group-hover:text-[#004b8d] transition-colors">{pt}</span>
 //                       <span className="text-[10px] text-slate-400 font-semibold">
 //                         {pt === "Electric" ? "Zero Emissions" : "Available Now"}
 //                       </span>
 //                     </button>
 //                   ))}
 //                 </div>
-
 //                 <p className="text-center mt-8">
-//                   <button
-//                     onClick={goBack}
-//                     className="text-xs text-slate-400 hover:text-[#004b8d] font-bold transition-colors underline-offset-4 hover:underline"
-//                   >
+//                   <button onClick={goBack} className="text-xs text-slate-400 hover:text-[#004b8d] font-bold transition-colors underline-offset-4 hover:underline">
 //                     ← Back to car selection
 //                   </button>
 //                 </p>
 //               </motion.div>
 //             )}
 
-//             {/* ── STEP 3 : VARIANT (conditional) ── */}
+//             {/* ── STEP 3 : VARIANT ── */}
 //             {selectedCar && selectedPowertrain && needsVariant && !selectedVariantId && (
 //               <motion.div key="step-var" {...motion_step}>
 //                 <div className="text-center mb-8">
 //                   <span className="inline-block text-xs font-black uppercase tracking-wider bg-[#004b8d]/8 text-[#004b8d] px-3 py-1 rounded-full mb-3">
 //                     {selectedCar} · {selectedPowertrain}
 //                   </span>
-//                   <h2 className="text-lg sm:text-xl font-black text-slate-800">
-//                     Choose your variant
-//                   </h2>
-//                   <p className="text-xs text-slate-400 mt-1 font-medium">
-//                     Different variants have different eligible benefits
-//                   </p>
+//                   <h2 className="text-lg sm:text-xl font-black text-slate-800">Choose your variant</h2>
+//                   <p className="text-xs text-slate-400 mt-1 font-medium">Different variants have different eligible benefits</p>
 //                 </div>
-
 //                 <div className="space-y-3 max-w-lg mx-auto">
 //                   {matchingOffers.map((offer) => (
 //                     <button
@@ -872,12 +850,8 @@
 //                     </button>
 //                   ))}
 //                 </div>
-
 //                 <p className="text-center mt-8">
-//                   <button
-//                     onClick={goBack}
-//                     className="text-xs text-slate-400 hover:text-[#004b8d] font-bold transition-colors underline-offset-4 hover:underline"
-//                   >
+//                   <button onClick={goBack} className="text-xs text-slate-400 hover:text-[#004b8d] font-bold transition-colors underline-offset-4 hover:underline">
 //                     ← Back to powertrain
 //                   </button>
 //                 </p>
@@ -888,8 +862,7 @@
 //             {finalOffer && (
 //               <motion.div key="step-result" {...motion_step} className="max-w-xl mx-auto">
 //                 <div className="rounded-3xl overflow-hidden border border-slate-200 shadow-xl shadow-slate-200/60">
-
-//                   {/* Hero Banner */}
+//                   {/* Hero banner */}
 //                   <div className="relative h-52 sm:h-60 overflow-hidden bg-[#003570]">
 //                     <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-[#0059a8]/50" />
 //                     <div className="absolute -left-10 -bottom-10 w-48 h-48 rounded-full bg-[#002a58]/60" />
@@ -899,19 +872,14 @@
 //                       className="absolute inset-0 w-full h-full object-cover opacity-35 mix-blend-luminosity"
 //                     />
 //                     <div className="absolute inset-0 flex flex-col justify-end p-6">
-//                       <p className="text-[10px] uppercase font-black tracking-[0.25em] text-blue-300/80 mb-1">
-//                         Your Garud Tata Offer
-//                       </p>
+//                       <p className="text-[10px] uppercase font-black tracking-[0.25em] text-blue-300/80 mb-1">Your Garud Tata Offer</p>
 //                       <h2 className="text-3xl sm:text-4xl font-black text-white leading-none">
 //                         Tata {finalOffer.model}
 //                         {finalOffer.category === "EV" && !finalOffer.model.includes("EV") ? " EV" : ""}
 //                       </h2>
 //                       <div className="flex flex-wrap gap-2 mt-2">
 //                         {[finalOffer.variantLabel ?? finalOffer.model, finalOffer.powertrain, finalOffer.modelYear].map((tag) => (
-//                           <span
-//                             key={tag}
-//                             className="text-[10px] font-bold uppercase tracking-wider bg-white/15 text-white/90 px-2.5 py-1 rounded-full"
-//                           >
+//                           <span key={tag} className="text-[10px] font-bold uppercase tracking-wider bg-white/15 text-white/90 px-2.5 py-1 rounded-full">
 //                             {tag}
 //                           </span>
 //                         ))}
@@ -921,22 +889,16 @@
 
 //                   {/* Offer body */}
 //                   <div className="p-6 sm:p-8 bg-white">
-//                     {/* Max benefit highlight */}
 //                     <div className="text-center mb-7 py-5 rounded-2xl bg-slate-50 border border-slate-100">
-//                       <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">
-//                         Maximum Eligible Benefits
-//                       </p>
+//                       <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Maximum Eligible Benefits</p>
 //                       <p className="text-4xl sm:text-5xl font-black text-[#004b8d] leading-none">
 //                         <span className="text-lg align-middle font-bold text-[#004b8d]/60 mr-1">UP TO</span>
 //                         <AnimatedCounter value={finalOffer.totalBenefit} />
 //                       </p>
 //                     </div>
 
-//                     {/* Breakdown grid */}
 //                     <div className="mb-6">
-//                       <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 text-center mb-3">
-//                         Benefit Breakdown
-//                       </p>
+//                       <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 text-center mb-3">Benefit Breakdown</p>
 //                       <div className="grid grid-cols-2 gap-2.5">
 //                         {(finalOffer.consumerOffer   ?? 0) > 0 && <BenefitChip label="Consumer Discount" value={finalOffer.consumerOffer!}   />}
 //                         {(finalOffer.exchangeBenefit  ?? 0) > 0 && <BenefitChip label="Exchange Bonus"    value={finalOffer.exchangeBenefit!}  />}
@@ -954,7 +916,6 @@
 //                       scrappage, and loyalty benefits may be combined only where applicable.
 //                     </p>
 
-//                     {/* CTA buttons */}
 //                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 //                       <button
 //                         onClick={() => setModal({ open: true, type: "Offer Enquiry" })}
@@ -970,7 +931,6 @@
 //                       </button>
 //                     </div>
 
-//                     {/* ✅ FIXED: Explore detail link now includes showroom segment */}
 //                     <div className="mt-3">
 //                       <Link
 //                         href={`/${showroom}/offers/${finalOffer.id}`}
@@ -986,7 +946,6 @@
 //                   </div>
 //                 </div>
 
-//                 {/* Back / Reset */}
 //                 <div className="flex items-center justify-center gap-5 mt-5 text-xs font-bold text-slate-400">
 //                   <button onClick={goBack} className="hover:text-[#004b8d] transition-colors hover:underline underline-offset-4">
 //                     ← Change Selection
@@ -1002,9 +961,7 @@
 //             {/* ── NO MATCH ── */}
 //             {selectedCar && selectedPowertrain && !finalOffer && matchingOffers.length === 0 && (
 //               <motion.div key="no-match" {...motion_step} className="text-center py-14 max-w-sm mx-auto">
-//                 <div className="w-14 h-14 rounded-2xl bg-[#004b8d]/8 flex items-center justify-center mx-auto mb-4 text-2xl">
-//                   🔍
-//                 </div>
+//                 <div className="w-14 h-14 rounded-2xl bg-[#004b8d]/8 flex items-center justify-center mx-auto mb-4 text-2xl">🔍</div>
 //                 <h3 className="text-lg font-black text-slate-800 mb-2">No Specific Offer Found</h3>
 //                 <p className="text-sm text-slate-500 mb-7 leading-relaxed font-medium">
 //                   Our team can verify the latest applicable benefits for your exact requirement.
@@ -1015,10 +972,7 @@
 //                 >
 //                   Talk to Garud Tata
 //                 </button>
-//                 <button
-//                   onClick={reset}
-//                   className="text-xs text-slate-400 hover:text-[#004b8d] font-bold hover:underline underline-offset-4 transition-colors"
-//                 >
+//                 <button onClick={reset} className="text-xs text-slate-400 hover:text-[#004b8d] font-bold hover:underline underline-offset-4 transition-colors">
 //                   Start Over
 //                 </button>
 //               </motion.div>
@@ -1031,12 +985,7 @@
 //       {/* ── TRUST BAR ── */}
 //       <div className="max-w-3xl mx-auto mt-10 text-center">
 //         <div className="flex flex-wrap items-center justify-center gap-y-2.5 gap-x-5 text-[11px] font-bold text-slate-400">
-//           {[
-//             "Verified Garud Offers",
-//             "MY25 / MY24 Benefits",
-//             "Exchange & Scrappage",
-//             "Test Drive Available",
-//           ].map((t) => (
+//           {["Verified Garud Offers", "MY25 / MY24 Benefits", "Exchange & Scrappage", "Test Drive Available"].map((t) => (
 //             <span key={t} className="flex items-center gap-1.5">
 //               <span className="text-emerald-500">✓</span> {t}
 //             </span>
@@ -1079,6 +1028,14 @@
 //     </div>
 //   );
 // }
+
+
+
+
+
+
+
+
 
 
 
@@ -1319,9 +1276,11 @@ function OfferEnquiryModal({
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
 
-      // ✅ Google Ads conversion tracking
+      // Google Ads conversion tracking — fires only after successful API submission
       w.gtag?.("event", "conversion", {
-        send_to: "AW-18209967669/FeICCNezs-gcELWcmOtD",
+        send_to: "AW-18209967669/lusxCJrosuocELWcmOtD",
+        value: 1.0,
+        currency: "INR",
       });
 
       setSuccess(true);

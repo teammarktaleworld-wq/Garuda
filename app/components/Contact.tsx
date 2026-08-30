@@ -14,6 +14,12 @@
 //   ArrowRight, Loader2, CheckCircle2, Building2, AlertCircle,
 // } from "lucide-react";
 
+// declare global {
+//   interface Window {
+//     gtag?: (...args: any[]) => void;
+//   }
+// }
+
 // /* ══════════════════════════════════════════════════════════════════════
 //    CONSTANTS
 // ══════════════════════════════════════════════════════════════════════ */
@@ -53,10 +59,10 @@
 // type TabId = "enquiry" | "service" | "complaint" | "feedback";
 
 // const TABS: { id: TabId; label: string; icon: typeof Car }[] = [
-//   { id: "enquiry",   label: "Car Enquiry",       icon: Car },
-//   { id: "service",   label: "Service Booking",   icon: Wrench },
+//   { id: "enquiry",   label: "Car Enquiry",          icon: Car },
+//   { id: "service",   label: "Service Booking",      icon: Wrench },
 //   { id: "complaint", label: "Complaints / Queries", icon: MessageSquare },
-//   { id: "feedback",  label: "Feedback",           icon: Star },
+//   { id: "feedback",  label: "Feedback",             icon: Star },
 // ];
 
 // /* ══════════════════════════════════════════════════════════════════════
@@ -215,6 +221,12 @@
 //       });
 //       const data = await res.json().catch(() => ({}));
 //       if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
+
+//       // ✅ Google Ads conversion — fires only on successful API response
+//       window.gtag?.("event", "conversion", {
+//         send_to: "AW-18209967669/FeICCNezs-gcELWcmOtD",
+//       });
+
 //       setSubmitted(true);
 //     } catch (err: unknown) {
 //       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -387,7 +399,7 @@
 //     if (loading) return;
 //     setError("");
 //     if (!form.name.trim())                           { setError("Please enter your name."); return; }
-//     if (form.mobile.replace(/\D/g, "").length < 10)  { setError("Please enter a valid mobile number."); return; }
+//     if (form.mobile.replace(/\D/g, "").length < 10)  { setError("Please enter your name."); return; }
 //     if (!form.outlet)                                { setError("Please select an outlet."); return; }
 //     if (!form.query.trim())                          { setError("Please describe your query."); return; }
 
@@ -665,8 +677,6 @@
 //       id="contact"
 //       className="scroll-mt-20 lg:scroll-mt-24 relative bg-[#0D1829] py-16 sm:py-20 lg:py-28 overflow-hidden"
 //     >
-//       {/* Added scroll-mt-20 lg:scroll-mt-24 to offset the fixed navbar height */}
-      
 //       {/* Background */}
 //       <div className="absolute inset-0 overflow-hidden pointer-events-none">
 //         <div
@@ -790,6 +800,7 @@
 
 
 
+
 "use client";
 
 import {
@@ -807,6 +818,14 @@ declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
   }
+}
+
+function trackFormConversion() {
+  window.gtag?.("event", "conversion", {
+    send_to: "AW-18209967669/BPu-CPPRseocELWcmOtD",
+    value: 1.0,
+    currency: "INR",
+  });
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -1011,10 +1030,8 @@ function CarEnquiryForm() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
 
-      // ✅ Google Ads conversion — fires only on successful API response
-      window.gtag?.("event", "conversion", {
-        send_to: "AW-18209967669/FeICCNezs-gcELWcmOtD",
-      });
+      // Google Ads conversion — fires only after successful submission
+      trackFormConversion();
 
       setSubmitted(true);
     } catch (err: unknown) {
@@ -1105,6 +1122,9 @@ function ServiceBookingForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
+
+      trackFormConversion();
+
       setSubmitted(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -1200,6 +1220,9 @@ function ComplaintForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
+
+      trackFormConversion();
+
       setSubmitted(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -1287,6 +1310,9 @@ function FeedbackForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
+
+      trackFormConversion();
+
       setSubmitted(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
