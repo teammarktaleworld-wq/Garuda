@@ -684,9 +684,6 @@
 
 
 
-
-
-
 "use client";
 
 import {
@@ -697,35 +694,65 @@ import {
   type FormEvent,
 } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, Phone, MessageCircle, Loader2 } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Phone,
+  MessageCircle,
+  Loader2,
+} from "lucide-react";
 
 // ─── TRACKING ─────────────────────────────────────────────────────────────────
 declare global {
   interface Window {
-    fbq?: (...args: unknown[]) => void;
-    gtag?: (...args: unknown[]) => void;
+    fbq?: (...args: any[]) => void;
+    gtag?: (...args: any[]) => void;
   }
 }
+
 function track(event: string, params?: Record<string, string>) {
   if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", event, params);
   }
 }
+
 // Google Ads conversion tracking.
 // Fired only after /api/enquiry returns a successful response.
 const trackGoogleAdsFormConversion = () => {
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
-    window.gtag("event", "conversion", {
-      send_to: "AW-18209967669/dhtlCNDauuocELWcmOtD",
+    window.gtag?.("event", "conversion", {
+      send_to: "AW-18209967669/lusxCJrosuocELWcmOtD",
+      value: 1.0,
+      currency: "INR",
     });
   }
 };
 
-const trackViewContent = (vehicle?: string) => track("ViewContent", { content_name: vehicle ?? "General Offer" });
-const trackGetOffer    = (vehicle?: string) => track("Lead",         { content_name: vehicle ?? "General Offer", source: "GetOfferCTA" });
-const trackTestDrive   = ()                 => track("Lead",         { source: "TestDriveCTA" });
-const trackCall        = ()                 => track("Contact",      { source: "CallCTA" });
-const trackWhatsApp    = ()                 => track("Contact",      { source: "WhatsAppCTA" });
+const trackViewContent = (vehicle?: string) =>
+  track("ViewContent", {
+    content_name: vehicle ?? "General Offer",
+  });
+
+const trackGetOffer = (vehicle?: string) =>
+  track("Lead", {
+    content_name: vehicle ?? "General Offer",
+    source: "GetOfferCTA",
+  });
+
+const trackTestDrive = () =>
+  track("Lead", {
+    source: "TestDriveCTA",
+  });
+
+const trackCall = () =>
+  track("Contact", {
+    source: "CallCTA",
+  });
+
+const trackWhatsApp = () =>
+  track("Contact", {
+    source: "WhatsAppCTA",
+  });
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 export interface OfferHeroProps {
@@ -739,11 +766,13 @@ export interface OfferHeroProps {
   whatsappNumber?: string;
   offerSectionId?: string;
   carModels?: string[];
+
   /**
    * Static image shown instantly while video loads (or as permanent fallback).
    * Defaults to the Sierra keyvisual.
    */
   backgroundImage?: string;
+
   /**
    * Optional looping promo video. Cross-fades in over the image once
    * the browser has buffered enough to play. Falls back to image on error.
@@ -765,6 +794,7 @@ const DEFAULT_MODELS = [
   "Tata Curvv",
   "Tata Harrier",
   "Tata Safari",
+
   // EV
   "Tata Tiago EV",
   "Tata Punch EV",
@@ -776,13 +806,33 @@ const DEFAULT_MODELS = [
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 const fadeUp = (delay = 0) => ({
-  hidden:  { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE, delay } },
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: EASE,
+      delay,
+    },
+  },
 });
 
 const lineReveal = (delay = 0) => ({
-  hidden:  { y: "108%" },
-  visible: { y: "0%",   transition: { duration: 0.7, ease: EASE, delay } },
+  hidden: {
+    y: "108%",
+  },
+  visible: {
+    y: "0%",
+    transition: {
+      duration: 0.7,
+      ease: EASE,
+      delay,
+    },
+  },
 });
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
@@ -801,17 +851,33 @@ export default function OfferHero({
   backgroundVideo,
 }: OfferHeroProps) {
   const displayVehicle = vehicle ? `Tata ${vehicle}` : undefined;
-  const hl1 = headlineLine1 ?? (vehicle ? `Drive Home Your` : "Drive Home");
-  const hl2 = headlineLine2 ?? (vehicle ? displayVehicle! : "Your Dream Tata.");
-  const badgeLabel = offerLabel ?? (vehicle ? `EXCLUSIVE ${vehicle.toUpperCase()} OFFER` : "EXCLUSIVE OFFER");
+
+  const hl1 =
+    headlineLine1 ??
+    (vehicle ? "Drive Home Your" : "Drive Home");
+
+  const hl2 =
+    headlineLine2 ??
+    (vehicle ? displayVehicle! : "Your Dream Tata.");
+
+  const badgeLabel =
+    offerLabel ??
+    (vehicle
+      ? `EXCLUSIVE ${vehicle.toUpperCase()} OFFER`
+      : "EXCLUSIVE OFFER");
+
   const waMessage = vehicle
     ? `Hi Garud Tata, I am interested in the Tata ${vehicle} offer. Please share the details.`
     : `Hi Garud Tata, I am interested in the latest Tata car offers. Please share the current offers.`;
 
-  useEffect(() => { trackViewContent(vehicle); }, [vehicle]);
+  useEffect(() => {
+    trackViewContent(vehicle);
+  }, [vehicle]);
 
   const scrollTo = useCallback((id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
   // ── Quick lead form state ─────────────────────────────────────────────────
@@ -820,48 +886,86 @@ export default function OfferHero({
     mobile: "",
     car: vehicle ? `Tata ${vehicle}` : "",
   });
-  const [submitted, setSubmitted]   = useState(false);
-  const [loading, setLoading]       = useState(false);
-  const [formError, setFormError]   = useState("");
 
-  const handleSubmit = useCallback(async (e: FormEvent) => {
-    e.preventDefault();
-    setFormError("");
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState("");
 
-    if (!formData.name.trim()) { setFormError("Please enter your name."); return; }
-    if (formData.mobile.replace(/\D/g, "").length < 10) { setFormError("Please enter a valid mobile number."); return; }
+  const handleSubmit = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
+      setFormError("");
 
-    setLoading(true);
-    try {
-      const res = await fetch("/api/enquiry", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, source: "hero-form" }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? "Submission failed.");
+      if (!formData.name.trim()) {
+        setFormError("Please enter your name.");
+        return;
       }
-      // Google Ads: count the lead only after the enquiry was
-      // successfully accepted by the backend.
-      trackGoogleAdsFormConversion();
 
-      // Keep the existing Facebook Lead tracking.
-      trackGetOffer(vehicle);
+      if (
+        formData.mobile.replace(/\D/g, "").length < 10
+      ) {
+        setFormError("Please enter a valid mobile number.");
+        return;
+      }
 
-      setSubmitted(true);
-      setTimeout(() => scrollTo(offerSectionId), 400);
-    } catch (err: unknown) {
-      setFormError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  }, [formData, vehicle, offerSectionId, scrollTo]);
+      setLoading(true);
+
+      try {
+        const res = await fetch("/api/enquiry", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formData,
+            source: "hero-form",
+          }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(
+            data.error ?? "Submission failed."
+          );
+        }
+
+        // ─────────────────────────────────────────────
+        // GOOGLE ADS CONVERSION
+        // Fires ONLY after successful form submission.
+        // ─────────────────────────────────────────────
+        trackGoogleAdsFormConversion();
+
+        // Keep existing Facebook Lead tracking.
+        trackGetOffer(vehicle);
+
+        setSubmitted(true);
+
+        setTimeout(
+          () => scrollTo(offerSectionId),
+          400
+        );
+      } catch (err: unknown) {
+        setFormError(
+          err instanceof Error
+            ? err.message
+            : "Something went wrong."
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      formData,
+      vehicle,
+      offerSectionId,
+      scrollTo,
+    ]
+  );
 
   return (
     <>
       {/* ════════════════════════════════════════════
-          HERO SECTION — text-only, no vehicle image
+          HERO SECTION
       ════════════════════════════════════════════ */}
       <section
         id="hero"
@@ -872,19 +976,24 @@ export default function OfferHero({
         "
         aria-label="Hero — Garud Tata Exclusive Offers"
       >
-        {/* ── Cinematic background: image → video crossfade ────── */}
-        <HeroBackground image={backgroundImage} video={backgroundVideo} />
+        {/* ── Cinematic background ─────────────────────────────── */}
+        <HeroBackground
+          image={backgroundImage}
+          video={backgroundVideo}
+        />
 
         {/* ── Content ──────────────────────────────────────────── */}
-        <div className="
-          relative z-10
-          w-full max-w-[1440px] mx-auto
-          px-5 lg:px-16
-          py-[120px] lg:py-[140px]
-          grid grid-cols-1 xl:grid-cols-[1fr_320px]
-          gap-10 xl:gap-16
-          items-center
-        ">
+        <div
+          className="
+            relative z-10
+            w-full max-w-[1440px] mx-auto
+            px-5 lg:px-16
+            py-[120px] lg:py-[140px]
+            grid grid-cols-1 xl:grid-cols-[1fr_320px]
+            gap-10 xl:gap-16
+            items-center
+          "
+        >
           {/* LEFT — hero copy */}
           <div className="flex flex-col max-w-[720px]">
 
@@ -898,12 +1007,20 @@ export default function OfferHero({
               <span className="text-[10px] font-bold tracking-[0.28em] text-white/40 uppercase">
                 GARUD TATA · NEW DELHI
               </span>
-              <span className="
-                inline-flex items-center gap-2
-                px-3.5 py-1.5 rounded-full
-                bg-[#0055A5]/20 border border-[#0055A5]/40
-                text-[#5BA3E8] text-[11px] font-semibold tracking-[0.16em] uppercase
-              ">
+
+              <span
+                className="
+                  inline-flex items-center gap-2
+                  px-3.5 py-1.5 rounded-full
+                  bg-[#0055A5]/20
+                  border border-[#0055A5]/40
+                  text-[#5BA3E8]
+                  text-[11px]
+                  font-semibold
+                  tracking-[0.16em]
+                  uppercase
+                "
+              >
                 <span className="w-1.5 h-1.5 rounded-full bg-[#1E7FE8] animate-pulse" />
                 {badgeLabel}
               </span>
@@ -917,7 +1034,9 @@ export default function OfferHero({
                   initial="hidden"
                   animate="visible"
                   className="
-                    font-extrabold tracking-tight leading-[1.0]
+                    font-extrabold
+                    tracking-tight
+                    leading-[1.0]
                     text-[clamp(3rem,6.5vw,6rem)]
                     text-white
                   "
@@ -925,16 +1044,23 @@ export default function OfferHero({
                   {hl1}
                 </motion.h1>
               </div>
+
               <div className="overflow-hidden">
                 <motion.h1
                   variants={lineReveal(0.18)}
                   initial="hidden"
                   animate="visible"
                   className="
-                    font-extrabold tracking-tight leading-[1.0]
+                    font-extrabold
+                    tracking-tight
+                    leading-[1.0]
                     text-[clamp(3rem,6.5vw,6rem)]
-                    bg-gradient-to-r from-white via-[#A8CAFF] to-[#5BA3E8]
-                    bg-clip-text text-transparent
+                    bg-gradient-to-r
+                    from-white
+                    via-[#A8CAFF]
+                    to-[#5BA3E8]
+                    bg-clip-text
+                    text-transparent
                   "
                 >
                   {hl2}
@@ -943,22 +1069,42 @@ export default function OfferHero({
             </div>
 
             {/* Offer value pill */}
-            <motion.div variants={fadeUp(0.26)} initial="hidden" animate="visible" className="mb-6">
+            <motion.div
+              variants={fadeUp(0.26)}
+              initial="hidden"
+              animate="visible"
+              className="mb-6"
+            >
               {offerValue ? (
-                <span className="
-                  inline-block px-5 py-2.5 rounded-xl
-                  bg-[#0055A5] text-white
-                  text-[14px] font-bold tracking-[0.06em]
-                  shadow-[0_4px_24px_rgba(0,85,165,0.5)]
-                ">
+                <span
+                  className="
+                    inline-block
+                    px-5 py-2.5
+                    rounded-xl
+                    bg-[#0055A5]
+                    text-white
+                    text-[14px]
+                    font-bold
+                    tracking-[0.06em]
+                    shadow-[0_4px_24px_rgba(0,85,165,0.5)]
+                  "
+                >
                   BENEFITS UP TO {offerValue}*
                 </span>
               ) : (
-                <span className="
-                  inline-block px-5 py-2.5 rounded-xl
-                  bg-white/8 border border-white/15 text-white/70
-                  text-[13px] font-semibold tracking-[0.06em]
-                ">
+                <span
+                  className="
+                    inline-block
+                    px-5 py-2.5
+                    rounded-xl
+                    bg-white/8
+                    border border-white/15
+                    text-white/70
+                    text-[13px]
+                    font-semibold
+                    tracking-[0.06em]
+                  "
+                >
                   SPECIAL BENEFITS AVAILABLE
                 </span>
               )}
@@ -969,7 +1115,13 @@ export default function OfferHero({
               variants={fadeUp(0.32)}
               initial="hidden"
               animate="visible"
-              className="text-white/55 text-[16px] leading-relaxed max-w-[540px] mb-9"
+              className="
+                text-white/55
+                text-[16px]
+                leading-relaxed
+                max-w-[540px]
+                mb-9
+              "
             >
               {description}
             </motion.p>
@@ -982,32 +1134,66 @@ export default function OfferHero({
               className="flex flex-col sm:flex-row gap-3 mb-9"
             >
               <button
-                onClick={() => { trackGetOffer(vehicle); scrollTo(offerSectionId); }}
+                onClick={() => {
+                  trackGetOffer(vehicle);
+                  scrollTo(offerSectionId);
+                }}
                 className="
-                  group flex items-center justify-center gap-2.5
-                  px-8 py-[16px] rounded-full
-                  bg-[#0055A5] hover:bg-[#1E7FE8]
-                  text-white font-bold text-[14px] tracking-[0.06em]
+                  group
+                  flex items-center
+                  justify-center
+                  gap-2.5
+                  px-8 py-[16px]
+                  rounded-full
+                  bg-[#0055A5]
+                  hover:bg-[#1E7FE8]
+                  text-white
+                  font-bold
+                  text-[14px]
+                  tracking-[0.06em]
                   shadow-[0_4px_24px_rgba(0,85,165,0.45)]
                   hover:shadow-[0_8px_32px_rgba(30,127,232,0.55)]
                   hover:-translate-y-0.5
-                  transition-all duration-250
+                  transition-all
+                  duration-250
                 "
               >
                 GET MY OFFER
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-200" />
+
+                <ArrowRight
+                  size={16}
+                  className="
+                    group-hover:translate-x-1
+                    transition-transform
+                    duration-200
+                  "
+                />
               </button>
 
               <button
-                onClick={() => { trackTestDrive(); scrollTo("test-drive"); }}
+                onClick={() => {
+                  trackTestDrive();
+                  scrollTo("test-drive");
+                }}
                 className="
-                  group flex items-center justify-center gap-2.5
-                  px-8 py-[16px] rounded-full
-                  bg-white/6 backdrop-blur-md
-                  border border-white/20 hover:border-white/40 hover:bg-white/10
-                  text-white font-medium text-[14px] tracking-[0.04em]
+                  group
+                  flex items-center
+                  justify-center
+                  gap-2.5
+                  px-8 py-[16px]
+                  rounded-full
+                  bg-white/6
+                  backdrop-blur-md
+                  border border-white/20
+                  hover:border-white/40
+                  hover:bg-white/10
+                  text-white
+                  font-medium
+                  text-[14px]
+                  tracking-[0.04em]
                   hover:-translate-y-0.5
-                  transition-all duration-250
+                  transition-all
+                  duration-250
                 "
               >
                 BOOK TEST DRIVE
@@ -1025,20 +1211,41 @@ export default function OfferHero({
                 "Authorized Tata Dealer",
                 "Multiple Delhi Locations",
                 "Easy Enquiry",
-              ].map(label => (
-                <span key={label} className="flex items-center gap-1.5 text-[12px] text-white/45 font-medium">
-                  <CheckCircle2 size={13} className="text-[#0055A5] flex-shrink-0" />
+              ].map((label) => (
+                <span
+                  key={label}
+                  className="
+                    flex items-center gap-1.5
+                    text-[12px]
+                    text-white/45
+                    font-medium
+                  "
+                >
+                  <CheckCircle2
+                    size={13}
+                    className="text-[#0055A5] flex-shrink-0"
+                  />
                   {label}
                 </span>
               ))}
             </motion.div>
           </div>
 
-          {/* RIGHT — Quick lead form (visible from xl, inline) */}
+          {/* RIGHT — Quick lead form */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.55, duration: 0.6, ease: EASE }}
+            initial={{
+              opacity: 0,
+              y: 20,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            transition={{
+              delay: 0.55,
+              duration: 0.6,
+              ease: EASE,
+            }}
             className="hidden xl:block"
           >
             <LeadForm
@@ -1053,49 +1260,137 @@ export default function OfferHero({
           </motion.div>
         </div>
 
-        {/* ── Bottom gradient ───────────────────────────────────── */}
-        <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#050A12] to-transparent z-10 pointer-events-none" />
+        {/* Bottom gradient */}
+        <div
+          className="
+            absolute
+            bottom-0
+            left-0
+            right-0
+            h-28
+            bg-gradient-to-t
+            from-[#050A12]
+            to-transparent
+            z-10
+            pointer-events-none
+          "
+        />
       </section>
 
-      {/* ════════════════════════════════════════════
-          TRUST STRIP
-      ════════════════════════════════════════════ */}
+      {/* TRUST STRIP */}
       <TrustStrip />
 
-      {/* ════════════════════════════════════════════
-          MOBILE STICKY BOTTOM BAR
-      ════════════════════════════════════════════ */}
+      {/* MOBILE STICKY BOTTOM BAR */}
       <div
         className="fixed bottom-0 left-0 right-0 z-[70] lg:hidden"
-        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+        style={{
+          paddingBottom:
+            "env(safe-area-inset-bottom, 0px)",
+        }}
       >
-        <div className="bg-[#060B18]/96 backdrop-blur-xl border-t border-white/10 grid grid-cols-3 h-[72px]">
+        <div
+          className="
+            bg-[#060B18]/96
+            backdrop-blur-xl
+            border-t border-white/10
+            grid grid-cols-3
+            h-[72px]
+          "
+        >
           <a
             href={`tel:${phone}`}
             onClick={trackCall}
-            className="flex flex-col items-center justify-center gap-1 text-white/60 hover:text-white transition-colors"
+            className="
+              flex flex-col
+              items-center
+              justify-center
+              gap-1
+              text-white/60
+              hover:text-white
+              transition-colors
+            "
             aria-label={`Call ${phone}`}
           >
-            <Phone size={19} strokeWidth={1.5} />
-            <span className="text-[9px] uppercase tracking-wider font-semibold">Call</span>
+            <Phone
+              size={19}
+              strokeWidth={1.5}
+            />
+            <span
+              className="
+                text-[9px]
+                uppercase
+                tracking-wider
+                font-semibold
+              "
+            >
+              Call
+            </span>
           </a>
+
           <a
-            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(waMessage)}`}
+            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+              waMessage
+            )}`}
             target="_blank"
             rel="noopener noreferrer"
             onClick={trackWhatsApp}
-            className="flex flex-col items-center justify-center gap-1 text-[#25D366]/70 hover:text-[#25D366] transition-colors"
+            className="
+              flex flex-col
+              items-center
+              justify-center
+              gap-1
+              text-[#25D366]/70
+              hover:text-[#25D366]
+              transition-colors
+            "
             aria-label="Chat on WhatsApp"
           >
-            <MessageCircle size={19} strokeWidth={1.5} />
-            <span className="text-[9px] uppercase tracking-wider font-semibold">WhatsApp</span>
+            <MessageCircle
+              size={19}
+              strokeWidth={1.5}
+            />
+            <span
+              className="
+                text-[9px]
+                uppercase
+                tracking-wider
+                font-semibold
+              "
+            >
+              WhatsApp
+            </span>
           </a>
+
           <button
-            onClick={() => { trackGetOffer(vehicle); scrollTo(offerSectionId); }}
-            className="flex flex-col items-center justify-center gap-1 bg-[#0055A5] active:bg-[#004494] text-white transition-colors"
+            onClick={() => {
+              trackGetOffer(vehicle);
+              scrollTo(offerSectionId);
+            }}
+            className="
+              flex flex-col
+              items-center
+              justify-center
+              gap-1
+              bg-[#0055A5]
+              active:bg-[#004494]
+              text-white
+              transition-colors
+            "
           >
-            <ArrowRight size={19} strokeWidth={1.8} />
-            <span className="text-[9px] uppercase tracking-wider font-bold">Get Offer</span>
+            <ArrowRight
+              size={19}
+              strokeWidth={1.8}
+            />
+            <span
+              className="
+                text-[9px]
+                uppercase
+                tracking-wider
+                font-bold
+              "
+            >
+              Get Offer
+            </span>
           </button>
         </div>
       </div>
@@ -1108,46 +1403,73 @@ export default function OfferHero({
 // Video is stacked on top at opacity-0. Once the browser fires `canplay`
 // we cross-fade the video in over ~1.2 s. If the video errors or isn't
 // provided, the image stays visible forever — seamless fallback.
+
 interface HeroBgProps {
   image: string;
   video?: string;
 }
 
-function HeroBackground({ image, video }: HeroBgProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoReady, setVideoReady] = useState(false);
+function HeroBackground({
+  image,
+  video,
+}: HeroBgProps) {
+  const videoRef =
+    useRef<HTMLVideoElement>(null);
+
+  const [videoReady, setVideoReady] =
+    useState(false);
 
   useEffect(() => {
     const el = videoRef.current;
+
     if (!el || !video) return;
 
     // Reset if src changes between campaigns
     setVideoReady(false);
 
     const onCanPlay = () => {
-      el.play().catch(() => {/* autoplay blocked — image stays visible */});
+      el.play().catch(() => {
+        // autoplay blocked — image stays visible
+      });
+
       setVideoReady(true);
     };
-    const onError = () => setVideoReady(false);
 
-    el.addEventListener("canplay", onCanPlay, { once: true });
-    el.addEventListener("error",   onError,   { once: true });
+    const onError = () =>
+      setVideoReady(false);
+
+    el.addEventListener(
+      "canplay",
+      onCanPlay,
+      { once: true }
+    );
+
+    el.addEventListener(
+      "error",
+      onError,
+      { once: true }
+    );
+
     return () => {
-      el.removeEventListener("canplay", onCanPlay);
-      el.removeEventListener("error",   onError);
+      el.removeEventListener(
+        "canplay",
+        onCanPlay
+      );
+
+      el.removeEventListener(
+        "error",
+        onError
+      );
     };
   }, [video]);
 
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
 
-      {/* ── Layer 0: dark base ─────────────────────────────────── */}
+      {/* Layer 0: dark base */}
       <div className="absolute inset-0 bg-[#050A12]" />
 
-      {/* ── Layer 1: static image — always present ─────────────
-          Shows instantly. Acts as poster for the video.
-          Fades out gently once video is playing.
-      ───────────────────────────────────────────────────────── */}
+      {/* Layer 1: static image */}
       <img
         src={image}
         alt=""
@@ -1155,19 +1477,25 @@ function HeroBackground({ image, video }: HeroBgProps) {
         fetchPriority="high"
         decoding="async"
         className="
-          absolute inset-0 w-full h-full
-          object-cover object-center lg:object-[68%_center]
-          select-none pointer-events-none
-          transition-opacity duration-[1200ms] ease-in-out
+          absolute inset-0
+          w-full h-full
+          object-cover
+          object-center
+          lg:object-[68%_center]
+          select-none
+          pointer-events-none
+          transition-opacity
+          duration-[1200ms]
+          ease-in-out
         "
-        style={{ opacity: videoReady ? 0 : 0.62 }}
+        style={{
+          opacity: videoReady
+            ? 0
+            : 0.62,
+        }}
       />
 
-      {/* ── Layer 2: looping video — cross-fades in over image ──
-          Starts invisible, fades to opacity-0.68 once canplay fires.
-          Shares the same object-position as the image so the
-          composition doesn't jump on transition.
-      ───────────────────────────────────────────────────────── */}
+      {/* Layer 2: looping video */}
       {video && (
         <video
           ref={videoRef}
@@ -1177,65 +1505,111 @@ function HeroBackground({ image, video }: HeroBgProps) {
           playsInline
           preload="auto"
           className="
-            absolute inset-0 w-full h-full
-            object-cover object-center lg:object-[68%_center]
-            select-none pointer-events-none
-            transition-opacity duration-[1200ms] ease-in-out
+            absolute inset-0
+            w-full h-full
+            object-cover
+            object-center
+            lg:object-[68%_center]
+            select-none
+            pointer-events-none
+            transition-opacity
+            duration-[1200ms]
+            ease-in-out
           "
-          style={{ opacity: videoReady ? 0.62 : 0 }}
+          style={{
+            opacity: videoReady
+              ? 0.62
+              : 0,
+          }}
         />
       )}
 
-      {/* ── Layer 3: directional dark vignette ─────────────────
-          Left-heavy so text column is always legible.
-          Right side stays partially transparent to show the car.
-      ───────────────────────────────────────────────────────── */}
-      <div className="
-        absolute inset-0 pointer-events-none
-        bg-gradient-to-r
-        from-[#050A12]
-        via-[#050A12]/70
-        to-[#050A12]/15
-      " />
+      {/* Layer 3: directional dark vignette */}
+      <div
+        className="
+          absolute inset-0
+          pointer-events-none
+          bg-gradient-to-r
+          from-[#050A12]
+          via-[#050A12]/70
+          to-[#050A12]/15
+        "
+      />
 
-      {/* ── Layer 4: bottom scrim — blends into next section ─── */}
-      <div className="
-        absolute bottom-0 left-0 right-0 h-44
-        bg-gradient-to-t from-[#050A12] to-transparent
-        pointer-events-none
-      " />
+      {/* Layer 4: bottom scrim */}
+      <div
+        className="
+          absolute
+          bottom-0
+          left-0
+          right-0
+          h-44
+          bg-gradient-to-t
+          from-[#050A12]
+          to-transparent
+          pointer-events-none
+        "
+      />
 
-      {/* ── Layer 5: top scrim — blends under navbar ─────────── */}
-      <div className="
-        absolute top-0 left-0 right-0 h-36
-        bg-gradient-to-b from-[#050A12]/70 to-transparent
-        pointer-events-none
-      " />
+      {/* Layer 5: top scrim */}
+      <div
+        className="
+          absolute
+          top-0
+          left-0
+          right-0
+          h-36
+          bg-gradient-to-b
+          from-[#050A12]/70
+          to-transparent
+          pointer-events-none
+        "
+      />
 
-      {/* ── Layer 6: blue colour-grade — brands the imagery ──── */}
-      <div className="
-        absolute inset-0 pointer-events-none
-        bg-[#0A1628]/30
-        mix-blend-multiply
-      " />
+      {/* Layer 6: blue colour-grade */}
+      <div
+        className="
+          absolute inset-0
+          pointer-events-none
+          bg-[#0A1628]/30
+          mix-blend-multiply
+        "
+      />
 
-      {/* ── Layer 7: soft blue glow behind text column ────────── */}
-      <div className="
-        absolute top-[5%] -left-[8%]
-        w-[55vw] h-[55vw] max-w-[680px] max-h-[680px]
-        rounded-full
-        bg-[#0055A5]/18 blur-[130px]
-        pointer-events-none
-      " />
-
+      {/* Layer 7: soft blue glow */}
+      <div
+        className="
+          absolute
+          top-[5%]
+          -left-[8%]
+          w-[55vw]
+          h-[55vw]
+          max-w-[680px]
+          max-h-[680px]
+          rounded-full
+          bg-[#0055A5]/18
+          blur-[130px]
+          pointer-events-none
+        "
+      />
     </div>
   );
 }
 
 // ─── LEAD FORM ────────────────────────────────────────────────────────────────
 interface LeadFormProps {
-  formData: { name: string; mobile: string; car: string };
-  setFormData: React.Dispatch<React.SetStateAction<{ name: string; mobile: string; car: string }>>;
+  formData: {
+    name: string;
+    mobile: string;
+    car: string;
+  };
+  setFormData: React.Dispatch<
+    React.SetStateAction<{
+      name: string;
+      mobile: string;
+      car: string;
+    }>
+  >;
   onSubmit: (e: FormEvent) => void;
   submitted: boolean;
   loading: boolean;
@@ -1243,111 +1617,258 @@ interface LeadFormProps {
   carModels: string[];
 }
 
-function LeadForm({ formData, setFormData, onSubmit, submitted, loading, error, carModels }: LeadFormProps) {
+function LeadForm({
+  formData,
+  setFormData,
+  onSubmit,
+  submitted,
+  loading,
+  error,
+  carModels,
+}: LeadFormProps) {
   const inputCls = `
-    w-full bg-white/6 border border-white/12
-    rounded-xl px-4 py-3 text-white text-[13px]
+    w-full
+    bg-white/6
+    border border-white/12
+    rounded-xl
+    px-4 py-3
+    text-white
+    text-[13px]
     placeholder:text-white/25
-    focus:outline-none focus:border-[#0055A5]/70 focus:bg-white/9
-    transition-colors duration-150
+    focus:outline-none
+    focus:border-[#0055A5]/70
+    focus:bg-white/9
+    transition-colors
+    duration-150
   `;
 
   return (
-    <div className="
-      bg-[#060C1A]/80 backdrop-blur-2xl
-      border border-white/10
-      rounded-2xl p-6
-      shadow-[0_20px_60px_rgba(0,0,0,0.5)]
-    ">
+    <div
+      className="
+        bg-[#060C1A]/80
+        backdrop-blur-2xl
+        border border-white/10
+        rounded-2xl
+        p-6
+        shadow-[0_20px_60px_rgba(0,0,0,0.5)]
+      "
+    >
       {submitted ? (
         <div className="py-8 text-center">
-          <CheckCircle2 size={36} className="text-[#0055A5] mx-auto mb-3" />
-          <p className="text-white font-bold text-[16px]">We'll call you back!</p>
-          <p className="text-white/45 text-[13px] mt-1.5 leading-relaxed">
+          <CheckCircle2
+            size={36}
+            className="text-[#0055A5] mx-auto mb-3"
+          />
+
+          <p className="text-white font-bold text-[16px]">
+            We'll call you back!
+          </p>
+
+          <p
+            className="
+              text-white/45
+              text-[13px]
+              mt-1.5
+              leading-relaxed
+            "
+          >
             Our team will reach out within 24 hours.
           </p>
         </div>
       ) : (
-        <form onSubmit={onSubmit} noValidate>
-          <p className="text-white font-bold text-[15px] tracking-[0.05em] mb-5">
+        <form
+          onSubmit={onSubmit}
+          noValidate
+        >
+          <p
+            className="
+              text-white
+              font-bold
+              text-[15px]
+              tracking-[0.05em]
+              mb-5
+            "
+          >
             GET YOUR OFFER
           </p>
 
           <div className="space-y-3.5 mb-5">
+
+            {/* Name */}
             <div>
-              <label className="block text-[10px] text-white/35 mb-1.5 tracking-widest uppercase">
+              <label
+                className="
+                  block
+                  text-[10px]
+                  text-white/35
+                  mb-1.5
+                  tracking-widest
+                  uppercase
+                "
+              >
                 Name
               </label>
+
               <input
                 type="text"
                 required
                 value={formData.name}
-                onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((p) => ({
+                    ...p,
+                    name: e.target.value,
+                  }))
+                }
                 placeholder="Your full name"
                 className={inputCls}
               />
             </div>
 
+            {/* Mobile */}
             <div>
-              <label className="block text-[10px] text-white/35 mb-1.5 tracking-widest uppercase">
+              <label
+                className="
+                  block
+                  text-[10px]
+                  text-white/35
+                  mb-1.5
+                  tracking-widest
+                  uppercase
+                "
+              >
                 Mobile
               </label>
+
               <input
                 type="tel"
                 required
                 value={formData.mobile}
-                onChange={e => setFormData(p => ({ ...p, mobile: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((p) => ({
+                    ...p,
+                    mobile: e.target.value,
+                  }))
+                }
                 placeholder="+91 00000 00000"
                 className={inputCls}
               />
             </div>
 
+            {/* Car */}
             <div>
-              <label className="block text-[10px] text-white/35 mb-1.5 tracking-widest uppercase">
+              <label
+                className="
+                  block
+                  text-[10px]
+                  text-white/35
+                  mb-1.5
+                  tracking-widest
+                  uppercase
+                "
+              >
                 Car of Interest
               </label>
+
               <select
                 value={formData.car}
-                onChange={e => setFormData(p => ({ ...p, car: e.target.value }))}
-                className={`${inputCls} appearance-none [&>option]:bg-[#060C1A] [&>option]:text-white`}
+                onChange={(e) =>
+                  setFormData((p) => ({
+                    ...p,
+                    car: e.target.value,
+                  }))
+                }
+                className={`
+                  ${inputCls}
+                  appearance-none
+                  [&>option]:bg-[#060C1A]
+                  [&>option]:text-white
+                `}
               >
-                <option value="">Choose a model</option>
-                {carModels.map(m => (
-                  <option key={m} value={m}>{m}</option>
+                <option value="">
+                  Choose a model
+                </option>
+
+                {carModels.map((m) => (
+                  <option
+                    key={m}
+                    value={m}
+                  >
+                    {m}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
 
+          {/* Error */}
           {error && (
-            <p className="text-red-400 text-[12px] mb-3 leading-snug">{error}</p>
+            <p
+              className="
+                text-red-400
+                text-[12px]
+                mb-3
+                leading-snug
+              "
+            >
+              {error}
+            </p>
           )}
 
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
             className="
-              w-full flex items-center justify-center gap-2
-              py-3.5 rounded-xl
-              bg-[#0055A5] hover:bg-[#1E7FE8]
-              disabled:opacity-60 disabled:cursor-not-allowed
-              text-white font-bold text-[13px] tracking-[0.06em]
+              w-full
+              flex items-center
+              justify-center
+              gap-2
+              py-3.5
+              rounded-xl
+              bg-[#0055A5]
+              hover:bg-[#1E7FE8]
+              disabled:opacity-60
+              disabled:cursor-not-allowed
+              text-white
+              font-bold
+              text-[13px]
+              tracking-[0.06em]
               shadow-[0_4px_18px_rgba(0,85,165,0.4)]
               hover:shadow-[0_8px_24px_rgba(30,127,232,0.5)]
-              transition-all duration-200 group
+              transition-all
+              duration-200
+              group
             "
           >
             {loading ? (
-              <Loader2 size={16} className="animate-spin" />
+              <Loader2
+                size={16}
+                className="animate-spin"
+              />
             ) : (
               <>
                 GET MY OFFER
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+
+                <ArrowRight
+                  size={14}
+                  className="
+                    group-hover:translate-x-1
+                    transition-transform
+                  "
+                />
               </>
             )}
           </button>
 
-          <p className="text-[10px] text-white/20 mt-3.5 text-center leading-relaxed">
+          <p
+            className="
+              text-[10px]
+              text-white/20
+              mt-3.5
+              text-center
+              leading-relaxed
+            "
+          >
             *T&C apply. Our team will contact you within 24 hrs.
           </p>
         </form>
@@ -1364,12 +1885,46 @@ function TrustStrip() {
     "Test Drive Available",
     "Easy Enquiry",
   ];
+
   return (
-    <div className="bg-[#050A12] border-b border-white/6 py-4 px-5 overflow-x-auto">
-      <div className="max-w-[1440px] mx-auto flex items-center justify-center gap-4 flex-wrap">
+    <div
+      className="
+        bg-[#050A12]
+        border-b border-white/6
+        py-4 px-5
+        overflow-x-auto
+      "
+    >
+      <div
+        className="
+          max-w-[1440px]
+          mx-auto
+          flex items-center
+          justify-center
+          gap-4
+          flex-wrap
+        "
+      >
         {items.map((item, i) => (
-          <span key={item} className="flex items-center gap-3 text-[11px] text-white/35 font-medium uppercase tracking-[0.14em] whitespace-nowrap">
-            {i > 0 && <span className="text-white/12">•</span>}
+          <span
+            key={item}
+            className="
+              flex items-center
+              gap-3
+              text-[11px]
+              text-white/35
+              font-medium
+              uppercase
+              tracking-[0.14em]
+              whitespace-nowrap
+            "
+          >
+            {i > 0 && (
+              <span className="text-white/12">
+                •
+              </span>
+            )}
+
             {item}
           </span>
         ))}
@@ -1377,7 +1932,3 @@ function TrustStrip() {
     </div>
   );
 }
-
-
-
-
