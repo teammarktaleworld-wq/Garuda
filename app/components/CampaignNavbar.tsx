@@ -27,6 +27,7 @@ import { showrooms, HOME_URL } from "@/app/config/showrooms";
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
+    dataLayer?: Record<string, any>[];
   }
 }
 
@@ -154,29 +155,39 @@ const navItemVariants: Variants = {
 };
 
 /* =========================================================
-   GOOGLE ADS CALL CONVERSION
+   GOOGLE TAG MANAGER CLICK EVENTS
 ========================================================= */
 
-function fireCallConversion(url: string) {
-  const navigate = () => {
-    window.location.href = url;
-  };
+function pushGTMEvent(eventName: "call_click" | "whatsapp_click") {
+  if (typeof window === "undefined") return;
 
-  // Google Ads "Nav Sales button" conversion
-  // Conversion ID: AW-18209967669
-  // Conversion label: 25aMCKmSteocELWcmOtD
-  if (typeof window.gtag !== "function") {
-    navigate();
-    return;
-  }
-
-  window.gtag("event", "conversion", {
-    send_to: "AW-18209967669/25aMCKmSteocELWcmOtD",
-    value: 1.0,
-    currency: "INR",
-    event_callback: navigate,
-    event_timeout: 2000,
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: eventName,
   });
+}
+
+/* =========================================================
+   CALL BUTTON TRACKING
+========================================================= */
+
+function trackCallClick(url: string) {
+  // Sends a custom event to Google Tag Manager.
+  // GTM Trigger: Call Button Click
+  pushGTMEvent("call_click");
+
+  // Keep the normal phone-call behaviour.
+  window.location.href = url;
+}
+
+/* =========================================================
+   WHATSAPP BUTTON TRACKING
+========================================================= */
+
+function trackWhatsAppClick() {
+  // Sends a custom event to Google Tag Manager.
+  // GTM Trigger: Event whatsapp click
+  pushGTMEvent("whatsapp_click");
 }
 
 /* =========================================================
@@ -667,7 +678,7 @@ export default function CampaignNavbar({
                 href={telHref}
                 onClick={(event) => {
                   event.preventDefault();
-                  fireCallConversion(telHref);
+                  trackCallClick(telHref);
                 }}
                 className="group flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 text-gray-700 hover:text-gray-900 text-[13px] font-semibold tracking-wide transition-colors duration-150 border-r border-gray-100"
                 aria-label={`Call ${DISPLAY_PHONE}`}
@@ -699,6 +710,7 @@ export default function CampaignNavbar({
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={trackWhatsAppClick}
               className="group flex items-center gap-2 px-4 py-2.5 rounded-full border border-green-200 bg-green-50 hover:bg-green-100 text-green-700 text-[13px] font-semibold tracking-wide transition-colors duration-150 shadow-sm"
               aria-label="WhatsApp enquiry"
             >
@@ -746,6 +758,7 @@ export default function CampaignNavbar({
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={trackWhatsAppClick}
               className="p-2 text-green-600 bg-green-50 rounded-full hover:bg-green-100 transition-colors"
               aria-label="WhatsApp enquiry"
             >
@@ -760,7 +773,7 @@ export default function CampaignNavbar({
               href={telHref}
               onClick={(event) => {
                   event.preventDefault();
-                  fireCallConversion(telHref);
+                  trackCallClick(telHref);
                 }}
               className="p-2 text-[#0055A5] bg-[#0055A5]/10 rounded-full hover:bg-[#0055A5]/20 transition-colors"
               aria-label={`Call ${DISPLAY_PHONE}`}
@@ -917,7 +930,7 @@ export default function CampaignNavbar({
                   href={telHref}
                   onClick={(event) => {
                   event.preventDefault();
-                  fireCallConversion(telHref);
+                  trackCallClick(telHref);
                 }}
                   className="flex-1 text-[15px] font-bold text-gray-800"
                 >
@@ -936,6 +949,7 @@ export default function CampaignNavbar({
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={trackWhatsAppClick}
                 className="w-full flex items-center justify-between px-6 py-4 bg-[#25D366] active:bg-[#1ebe5d] rounded-2xl text-white font-bold tracking-[0.04em] text-[15px] shadow-md transition-colors"
               >
                 <span className="flex items-center gap-2.5">
@@ -986,7 +1000,7 @@ export default function CampaignNavbar({
             href={telHref}
             onClick={(event) => {
                   event.preventDefault();
-                  fireCallConversion(telHref);
+                  trackCallClick(telHref);
                 }}
             className="flex flex-col items-center justify-center gap-1 text-gray-500 active:text-[#0055A5] transition-colors border-r border-gray-100"
           >
@@ -1005,6 +1019,7 @@ export default function CampaignNavbar({
             href={whatsappHref}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={trackWhatsAppClick}
             className="flex flex-col items-center justify-center gap-1 text-[#25D366] active:opacity-80 transition-opacity border-r border-gray-100"
           >
             <MessageCircle

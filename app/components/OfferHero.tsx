@@ -1,6 +1,6 @@
 
 
-
+// garud-tata\app\components\OfferHero.tsx
 "use client";
 
 import {
@@ -23,7 +23,7 @@ import {
 declare global {
   interface Window {
     fbq?: (...args: any[]) => void;
-    dataLayer?: Record<string, unknown>[];
+    dataLayer?: Record<string, any>[];
   }
 }
 
