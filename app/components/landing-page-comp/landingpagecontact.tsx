@@ -1199,11 +1199,27 @@ import { Car, Bike, Loader2, AlertCircle, ArrowRight } from "lucide-react";
 /* ══════════════════════════════════════════════════════
    CONSTANTS
 ══════════════════════════════════════════════════════ */
+// const CARS = [
+//   "Tata Sierra", "Tata Harrier", "Tata Safari",
+//   "Tata Curvv", "Tata Curvv EV", "Tata Nexon", "Tata Nexon EV",
+//   "Tata Punch", "Tata Punch EV", "Tata Altroz",
+//   "Tata Tiago", "Tata Tiago EV", "Tata Tigor",
+// ] as const;
 const CARS = [
-  "Tata Sierra", "Tata Harrier", "Tata Safari",
-  "Tata Curvv", "Tata Curvv EV", "Tata Nexon", "Tata Nexon EV",
-  "Tata Punch", "Tata Punch EV", "Tata Altroz",
-  "Tata Tiago", "Tata Tiago EV", "Tata Tigor",
+  "Tata Sierra",
+  "Tata Sierra EV",
+  "Tata Harrier",
+  "Tata Safari",
+  "Tata Curvv",
+  "Tata Curvv EV",
+  "Tata Nexon",
+  "Tata Nexon EV",
+  "Tata Punch",
+  "Tata Punch EV",
+  "Tata Altroz",
+  "Tata Tiago",
+  "Tata Tiago EV",
+  "Tata Tigor",
 ] as const;
 
 const OUTLETS = [
