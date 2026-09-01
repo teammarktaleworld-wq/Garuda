@@ -858,113 +858,398 @@
 
 
 
+// "use client";
+
+// import { useState, useCallback, useRef } from "react";
+// import { ChevronLeft, ChevronRight } from "lucide-react";
+
+// const SLIDES = [
+//   { image: "/images/Hero images/Heroimage.avif", model: "Tata Sierra",  tagline: "Born to lead." },
+//   { image: "/images/Hero images/harrier-d.avif", model: "Tata Harrier", tagline: "Command every road." },
+//   { image: "/images/Hero images/safari-d.avif",  model: "Tata Safari",  tagline: "The adventure starts here." },
+//   { image: "/images/Hero images/nexon-d.avif",   model: "Tata Nexon",   tagline: "Urban. Unstoppable." },
+//   { image: "/images/Hero images/curvv-d.avif",   model: "Tata Curvv",   tagline: "Sculpted for tomorrow." },
+//   { image: "/images/Hero images/punch-d.avif",   model: "Tata Punch",   tagline: "Compact. Fearless." },
+//   { image: "/images/Hero images/altroz-d.avif",  model: "Tata Altroz",  tagline: "Precision in every detail." },
+//   { image: "/images/Hero images/tiago-d.avif",   model: "Tata Tiago",   tagline: "Smart drives start here." },
+// ];
+
+// export default function HeroSection() {
+//   const [current,   setCurrent]   = useState(0);
+//   const [prev,      setPrev]      = useState<number | null>(null);
+//   const [direction, setDirection] = useState<"left" | "right">("right");
+
+//   const animatingRef = useRef(false);
+
+//   // Core transition — takes a resolved next index and a direction
+//   const goTo = useCallback((next: number, dir: "left" | "right") => {
+//     if (animatingRef.current) return;
+//     setCurrent((c) => {
+//       if (c === next) return c;
+//       animatingRef.current = true;
+//       setDirection(dir);
+//       setPrev(c);
+//       setTimeout(() => {
+//         setPrev(null);
+//         animatingRef.current = false;
+//       }, 600);
+//       return next;
+//     });
+//   }, []);
+
+//   const goPrev = useCallback(() => {
+//     setCurrent((c) => {
+//       const next = (c - 1 + SLIDES.length) % SLIDES.length;
+//       goTo(next, "left");
+//       return c; // goTo will handle the real update
+//     });
+//   }, [goTo]);
+
+//   const goNext = useCallback(() => {
+//     setCurrent((c) => {
+//       const next = (c + 1) % SLIDES.length;
+//       goTo(next, "right");
+//       return c;
+//     });
+//   }, [goTo]);
+
+//   // Simpler: just compute next outside setState
+//   const handlePrev = useCallback(() => {
+//     if (animatingRef.current) return;
+//     const next = (current - 1 + SLIDES.length) % SLIDES.length;
+//     animatingRef.current = true;
+//     setDirection("left");
+//     setPrev(current);
+//     setCurrent(next);
+//     setTimeout(() => { setPrev(null); animatingRef.current = false; }, 600);
+//   }, [current]);
+
+//   const handleNext = useCallback(() => {
+//     if (animatingRef.current) return;
+//     const next = (current + 1) % SLIDES.length;
+//     animatingRef.current = true;
+//     setDirection("right");
+//     setPrev(current);
+//     setCurrent(next);
+//     setTimeout(() => { setPrev(null); animatingRef.current = false; }, 600);
+//   }, [current]);
+
+//   const handleDot = useCallback((i: number) => {
+//     if (animatingRef.current || i === current) return;
+//     const dir = i > current ? "right" : "left";
+//     animatingRef.current = true;
+//     setDirection(dir);
+//     setPrev(current);
+//     setCurrent(i);
+//     setTimeout(() => { setPrev(null); animatingRef.current = false; }, 600);
+//   }, [current]);
+
+//   const scrollToContact = () => {
+//     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
+//   };
+
+//   const slide     = SLIDES[current];
+//   const prevSlide = prev !== null ? SLIDES[prev] : null;
+
+//   return (
+//     <>
+//       <section
+//         className="relative w-full overflow-hidden bg-gray-900"
+//         style={{ height: "100svh", minHeight: 560 }}
+//         aria-label="Garud Tata — hero"
+//       >
+//         {/* Previous slide animating out */}
+//         {prevSlide && (
+//           <div
+//             key={`prev-${prev}`}
+//             className="absolute inset-0"
+//             style={{
+//               animation: `slideOut${direction === "right" ? "Left" : "Right"} 0.6s cubic-bezier(0.76,0,0.24,1) forwards`,
+//             }}
+//           >
+//             <img
+//               src={prevSlide.image}
+//               alt={prevSlide.model}
+//               className="absolute inset-0 w-full h-full object-cover object-center"
+//             />
+//             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+//           </div>
+//         )}
+
+//         {/* Current slide animating in */}
+//         <div
+//           key={`curr-${current}`}
+//           className="absolute inset-0"
+//           style={{
+//             animation: prev !== null
+//               ? `slideIn${direction === "right" ? "Right" : "Left"} 0.6s cubic-bezier(0.76,0,0.24,1) forwards`
+//               : "none",
+//           }}
+//         >
+//           <img
+//             src={slide.image}
+//             alt={slide.model}
+//             className="absolute inset-0 w-full h-full object-cover object-center"
+//             fetchPriority="high"
+//           />
+//           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+//         </div>
+
+//         {/* Left arrow */}
+//         <button
+//           onClick={handlePrev}
+//           aria-label="Previous"
+//           className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/25 transition-colors"
+//         >
+//           <ChevronLeft size={22} />
+//         </button>
+
+//         {/* Right arrow */}
+//         <button
+//           onClick={handleNext}
+//           aria-label="Next"
+//           className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/25 transition-colors"
+//         >
+//           <ChevronRight size={22} />
+//         </button>
+
+//         {/* Content */}
+//         <div className="relative z-10 h-full flex flex-col justify-end pb-14 px-6 sm:px-12 lg:px-20 max-w-[1440px] mx-auto w-full">
+//           <div className="mb-8">
+//             <p
+//               key={`tag-${current}`}
+//               className="text-white/70 text-sm font-medium mb-2 tracking-wide"
+//               style={{ animation: "fadeSlideUp 0.5s ease forwards" }}
+//             >
+//               {slide.tagline}
+//             </p>
+//             <h1
+//               key={`model-${current}`}
+//               className="font-black leading-none text-white"
+//               style={{
+//                 fontSize: "clamp(3rem, 9vw, 8rem)",
+//                 animation: "fadeSlideUp 0.55s ease 0.05s both forwards",
+//               }}
+//             >
+//               {slide.model}
+//             </h1>
+//           </div>
+
+//           <div className="flex items-center justify-between gap-4 flex-wrap">
+//             {/* Dots */}
+//             <div className="flex items-center gap-2">
+//               {SLIDES.map((_, i) => (
+//                 <button
+//                   key={i}
+//                   onClick={() => handleDot(i)}
+//                   aria-label={`Go to ${SLIDES[i].model}`}
+//                   className="transition-all duration-300 rounded-full focus:outline-none"
+//                   style={{
+//                     width: i === current ? 32 : 8,
+//                     height: 8,
+//                     background: i === current ? "#ffffff" : "rgba(255,255,255,0.35)",
+//                   }}
+//                 />
+//               ))}
+//             </div>
+
+//             {/* CTA */}
+//             <button
+//               onClick={scrollToContact}
+//               className="px-6 py-2.5 rounded-full bg-white text-gray-900 text-sm font-bold tracking-wide hover:bg-white/90 transition-colors shadow-md"
+//             >
+//               Contact Us
+//             </button>
+//           </div>
+//         </div>
+
+//         {/* Slide counter */}
+//         <div className="absolute top-8 right-8 z-10 text-white/40 text-xs font-mono tabular-nums select-none hidden sm:block">
+//           {String(current + 1).padStart(2, "0")} / {String(SLIDES.length).padStart(2, "0")}
+//         </div>
+//       </section>
+
+//       <style>{`
+//         @keyframes slideInRight  { from { transform: translateX(100%); }  to { transform: translateX(0); } }
+//         @keyframes slideInLeft   { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+//         @keyframes slideOutLeft  { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+//         @keyframes slideOutRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
+//         @keyframes fadeSlideUp   { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+//       `}</style>
+//     </>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 "use client";
 
 import { useState, useCallback, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const SLIDES = [
-  { image: "/images/Hero images/Heroimage.avif", model: "Tata Sierra",  tagline: "Born to lead." },
-  { image: "/images/Hero images/harrier-d.avif", model: "Tata Harrier", tagline: "Command every road." },
-  { image: "/images/Hero images/safari-d.avif",  model: "Tata Safari",  tagline: "The adventure starts here." },
-  { image: "/images/Hero images/nexon-d.avif",   model: "Tata Nexon",   tagline: "Urban. Unstoppable." },
-  { image: "/images/Hero images/curvv-d.avif",   model: "Tata Curvv",   tagline: "Sculpted for tomorrow." },
-  { image: "/images/Hero images/punch-d.avif",   model: "Tata Punch",   tagline: "Compact. Fearless." },
-  { image: "/images/Hero images/altroz-d.avif",  model: "Tata Altroz",  tagline: "Precision in every detail." },
-  { image: "/images/Hero images/tiago-d.avif",   model: "Tata Tiago",   tagline: "Smart drives start here." },
+  {
+    image: "/images/Hero images/Heroimage.avif",
+    model: "Tata Sierra",
+    tagline: "Born to lead.",
+  },
+  {
+    image: "/images/Hero images/harrier-d.avif",
+    model: "Tata Harrier",
+    tagline: "Command every road.",
+  },
+  {
+    image: "/images/Hero images/safari-d.avif",
+    model: "Tata Safari",
+    tagline: "The adventure starts here.",
+  },
+  {
+    image: "/images/Hero images/nexon-d.avif",
+    model: "Tata Nexon",
+    tagline: "Urban. Unstoppable.",
+  },
+  {
+    image: "/images/Hero images/curvv-d.avif",
+    model: "Tata Curvv",
+    tagline: "Sculpted for tomorrow.",
+  },
+  {
+    image: "/images/Hero images/punch-d.avif",
+    model: "Tata Punch",
+    tagline: "Compact. Fearless.",
+  },
+  {
+    image: "/images/Hero images/altroz-d.avif",
+    model: "Tata Altroz",
+    tagline: "Precision in every detail.",
+  },
+  {
+    image: "/images/Hero images/tiago-d.avif",
+    model: "Tata Tiago",
+    tagline: "Smart drives start here.",
+  },
 ];
 
 export default function HeroSection() {
-  const [current,   setCurrent]   = useState(0);
-  const [prev,      setPrev]      = useState<number | null>(null);
+  const [current, setCurrent] = useState(0);
+  const [prev, setPrev] = useState<number | null>(null);
   const [direction, setDirection] = useState<"left" | "right">("right");
 
   const animatingRef = useRef(false);
 
-  // Core transition — takes a resolved next index and a direction
-  const goTo = useCallback((next: number, dir: "left" | "right") => {
-    if (animatingRef.current) return;
-    setCurrent((c) => {
-      if (c === next) return c;
+  /*
+   * Change slide
+   */
+  const changeSlide = useCallback(
+    (nextIndex: number, dir: "left" | "right") => {
+      if (animatingRef.current) return;
+
+      if (nextIndex === current) return;
+
       animatingRef.current = true;
+
       setDirection(dir);
-      setPrev(c);
-      setTimeout(() => {
+      setPrev(current);
+      setCurrent(nextIndex);
+
+      window.setTimeout(() => {
         setPrev(null);
         animatingRef.current = false;
       }, 600);
-      return next;
-    });
-  }, []);
+    },
+    [current]
+  );
 
-  const goPrev = useCallback(() => {
-    setCurrent((c) => {
-      const next = (c - 1 + SLIDES.length) % SLIDES.length;
-      goTo(next, "left");
-      return c; // goTo will handle the real update
-    });
-  }, [goTo]);
-
-  const goNext = useCallback(() => {
-    setCurrent((c) => {
-      const next = (c + 1) % SLIDES.length;
-      goTo(next, "right");
-      return c;
-    });
-  }, [goTo]);
-
-  // Simpler: just compute next outside setState
+  /*
+   * Previous arrow
+   */
   const handlePrev = useCallback(() => {
     if (animatingRef.current) return;
-    const next = (current - 1 + SLIDES.length) % SLIDES.length;
-    animatingRef.current = true;
-    setDirection("left");
-    setPrev(current);
-    setCurrent(next);
-    setTimeout(() => { setPrev(null); animatingRef.current = false; }, 600);
-  }, [current]);
 
+    const nextIndex =
+      (current - 1 + SLIDES.length) % SLIDES.length;
+
+    changeSlide(nextIndex, "left");
+  }, [current, changeSlide]);
+
+  /*
+   * Next arrow
+   */
   const handleNext = useCallback(() => {
     if (animatingRef.current) return;
-    const next = (current + 1) % SLIDES.length;
-    animatingRef.current = true;
-    setDirection("right");
-    setPrev(current);
-    setCurrent(next);
-    setTimeout(() => { setPrev(null); animatingRef.current = false; }, 600);
-  }, [current]);
 
-  const handleDot = useCallback((i: number) => {
-    if (animatingRef.current || i === current) return;
-    const dir = i > current ? "right" : "left";
-    animatingRef.current = true;
-    setDirection(dir);
-    setPrev(current);
-    setCurrent(i);
-    setTimeout(() => { setPrev(null); animatingRef.current = false; }, 600);
-  }, [current]);
+    const nextIndex =
+      (current + 1) % SLIDES.length;
 
-  const scrollToContact = () => {
-    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+    changeSlide(nextIndex, "right");
+  }, [current, changeSlide]);
 
-  const slide     = SLIDES[current];
-  const prevSlide = prev !== null ? SLIDES[prev] : null;
+  /*
+   * Dot navigation
+   */
+  const handleDot = useCallback(
+    (index: number) => {
+      if (animatingRef.current) return;
+      if (index === current) return;
+
+      const dir = index > current ? "right" : "left";
+
+      changeSlide(index, dir);
+    },
+    [current, changeSlide]
+  );
+
+  /*
+   * Contact CTA
+   */
+  const scrollToContact = useCallback(() => {
+    document
+      .getElementById("contact")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }, []);
+
+  const slide = SLIDES[current];
+
+  const prevSlide =
+    prev !== null ? SLIDES[prev] : null;
 
   return (
     <>
       <section
         className="relative w-full overflow-hidden bg-gray-900"
-        style={{ height: "100svh", minHeight: 560 }}
+        style={{
+          height: "100svh",
+          minHeight: 560,
+        }}
         aria-label="Garud Tata — hero"
       >
-        {/* Previous slide animating out */}
+        {/* =========================================
+            PREVIOUS SLIDE
+        ========================================= */}
         {prevSlide && (
           <div
             key={`prev-${prev}`}
-            className="absolute inset-0"
+            className="absolute inset-0 z-[1]"
             style={{
-              animation: `slideOut${direction === "right" ? "Left" : "Right"} 0.6s cubic-bezier(0.76,0,0.24,1) forwards`,
+              animation: `slideOut${
+                direction === "right" ? "Left" : "Right"
+              } 0.6s cubic-bezier(0.76,0,0.24,1) forwards`,
             }}
           >
             <img
@@ -972,18 +1257,26 @@ export default function HeroSection() {
               alt={prevSlide.model}
               className="absolute inset-0 w-full h-full object-cover object-center"
             />
+
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
           </div>
         )}
 
-        {/* Current slide animating in */}
+        {/* =========================================
+            CURRENT SLIDE
+        ========================================= */}
         <div
           key={`curr-${current}`}
-          className="absolute inset-0"
+          className="absolute inset-0 z-[2]"
           style={{
-            animation: prev !== null
-              ? `slideIn${direction === "right" ? "Right" : "Left"} 0.6s cubic-bezier(0.76,0,0.24,1) forwards`
-              : "none",
+            animation:
+              prev !== null
+                ? `slideIn${
+                    direction === "right"
+                      ? "Right"
+                      : "Left"
+                  } 0.6s cubic-bezier(0.76,0,0.24,1) forwards`
+                : "none",
           }}
         >
           <img
@@ -992,62 +1285,154 @@ export default function HeroSection() {
             className="absolute inset-0 w-full h-full object-cover object-center"
             fetchPriority="high"
           />
+
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
         </div>
 
-        {/* Left arrow */}
+        {/* =========================================
+            LEFT ARROW
+            IMPORTANT: z-[30] + pointer-events-auto
+        ========================================= */}
         <button
+          type="button"
           onClick={handlePrev}
-          aria-label="Previous"
-          className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/25 transition-colors"
+          disabled={animatingRef.current}
+          aria-label="Previous slide"
+          className="
+            absolute
+            left-4 sm:left-8
+            top-1/2
+            -translate-y-1/2
+            z-[30]
+            w-11 h-11
+            rounded-full
+            border border-white/30
+            bg-white/10
+            backdrop-blur-sm
+            flex items-center justify-center
+            text-white
+            hover:bg-white/25
+            active:scale-95
+            transition-all
+            cursor-pointer
+            pointer-events-auto
+          "
         >
-          <ChevronLeft size={22} />
+          <ChevronLeft
+            size={22}
+            strokeWidth={2}
+          />
         </button>
 
-        {/* Right arrow */}
+        {/* =========================================
+            RIGHT ARROW
+            IMPORTANT: z-[30] + pointer-events-auto
+        ========================================= */}
         <button
+          type="button"
           onClick={handleNext}
-          aria-label="Next"
-          className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/25 transition-colors"
+          disabled={animatingRef.current}
+          aria-label="Next slide"
+          className="
+            absolute
+            right-4 sm:right-8
+            top-1/2
+            -translate-y-1/2
+            z-[30]
+            w-11 h-11
+            rounded-full
+            border border-white/30
+            bg-white/10
+            backdrop-blur-sm
+            flex items-center justify-center
+            text-white
+            hover:bg-white/25
+            active:scale-95
+            transition-all
+            cursor-pointer
+            pointer-events-auto
+          "
         >
-          <ChevronRight size={22} />
+          <ChevronRight
+            size={22}
+            strokeWidth={2}
+          />
         </button>
 
-        {/* Content */}
-        <div className="relative z-10 h-full flex flex-col justify-end pb-14 px-6 sm:px-12 lg:px-20 max-w-[1440px] mx-auto w-full">
+        {/* =========================================
+            HERO CONTENT
+            z-[20] but does NOT cover arrows
+        ========================================= */}
+        <div
+          className="
+            relative
+            z-[20]
+            h-full
+            flex
+            flex-col
+            justify-end
+            pb-14
+            px-6
+            sm:px-12
+            lg:px-20
+            max-w-[1440px]
+            mx-auto
+            w-full
+            pointer-events-none
+          "
+        >
           <div className="mb-8">
+            {/* Tagline */}
             <p
               key={`tag-${current}`}
               className="text-white/70 text-sm font-medium mb-2 tracking-wide"
-              style={{ animation: "fadeSlideUp 0.5s ease forwards" }}
+              style={{
+                animation:
+                  "fadeSlideUp 0.5s ease forwards",
+              }}
             >
               {slide.tagline}
             </p>
+
+            {/* Model */}
             <h1
               key={`model-${current}`}
               className="font-black leading-none text-white"
               style={{
-                fontSize: "clamp(3rem, 9vw, 8rem)",
-                animation: "fadeSlideUp 0.55s ease 0.05s both forwards",
+                fontSize:
+                  "clamp(3rem, 9vw, 8rem)",
+                animation:
+                  "fadeSlideUp 0.55s ease 0.05s both forwards",
               }}
             >
               {slide.model}
             </h1>
           </div>
 
+          {/* Bottom controls */}
           <div className="flex items-center justify-between gap-4 flex-wrap">
             {/* Dots */}
-            <div className="flex items-center gap-2">
-              {SLIDES.map((_, i) => (
+            <div className="flex items-center gap-2 pointer-events-auto">
+              {SLIDES.map((slideItem, i) => (
                 <button
-                  key={i}
+                  type="button"
+                  key={slideItem.model}
                   onClick={() => handleDot(i)}
-                  aria-label={`Go to ${SLIDES[i].model}`}
-                  className="transition-all duration-300 rounded-full focus:outline-none"
+                  aria-label={`Go to ${slideItem.model}`}
+                  className="
+                    transition-all
+                    duration-300
+                    rounded-full
+                    focus:outline-none
+                    cursor-pointer
+                  "
                   style={{
                     width: i === current ? 32 : 8,
                     height: 8,
-                    background: i === current ? "#ffffff" : "rgba(255,255,255,0.35)",
+                    background:
+                      i === current
+                        ? "#ffffff"
+                        : "rgba(255,255,255,0.35)",
                   }}
                 />
               ))}
@@ -1055,26 +1440,105 @@ export default function HeroSection() {
 
             {/* CTA */}
             <button
+              type="button"
               onClick={scrollToContact}
-              className="px-6 py-2.5 rounded-full bg-white text-gray-900 text-sm font-bold tracking-wide hover:bg-white/90 transition-colors shadow-md"
+              className="
+                pointer-events-auto
+                px-6
+                py-2.5
+                rounded-full
+                bg-white
+                text-gray-900
+                text-sm
+                font-bold
+                tracking-wide
+                hover:bg-white/90
+                active:scale-95
+                transition-all
+                shadow-md
+                cursor-pointer
+              "
             >
               Contact Us
             </button>
           </div>
         </div>
 
-        {/* Slide counter */}
-        <div className="absolute top-8 right-8 z-10 text-white/40 text-xs font-mono tabular-nums select-none hidden sm:block">
-          {String(current + 1).padStart(2, "0")} / {String(SLIDES.length).padStart(2, "0")}
+        {/* =========================================
+            SLIDE COUNTER
+        ========================================= */}
+        <div
+          className="
+            absolute
+            top-8
+            right-8
+            z-[30]
+            text-white/40
+            text-xs
+            font-mono
+            tabular-nums
+            select-none
+            hidden
+            sm:block
+          "
+        >
+          {String(current + 1).padStart(2, "0")}
+          {" / "}
+          {String(SLIDES.length).padStart(2, "0")}
         </div>
       </section>
 
+      {/* ===========================================
+          ANIMATIONS
+      =========================================== */}
       <style>{`
-        @keyframes slideInRight  { from { transform: translateX(100%); }  to { transform: translateX(0); } }
-        @keyframes slideInLeft   { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-        @keyframes slideOutLeft  { from { transform: translateX(0); } to { transform: translateX(-100%); } }
-        @keyframes slideOutRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
-        @keyframes fadeSlideUp   { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideInLeft {
+          from {
+            transform: translateX(-100%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideOutLeft {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(-100%);
+          }
+        }
+
+        @keyframes slideOutRight {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(100%);
+          }
+        }
+
+        @keyframes fadeSlideUp {
+          from {
+            opacity: 0;
+            transform: translateY(16px);
+          }
+
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
       `}</style>
     </>
   );
