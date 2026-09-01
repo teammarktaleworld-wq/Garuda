@@ -82,7 +82,7 @@ const ALL_OUTLETS: OutletData[] = [
     name:      "Garud Tata – Najafgarh",
     shortName: "Najafgarh",
     type:      "showroom",
-    address:   "Plot No. 8–11, Najafgarh Rd, Near Sai Baba Mandir, Roshan Garden, Najafgarh, New Delhi, Delhi 110043",
+    address:   "Plot No. 13, Najafgarh Rd, near Sai Baba Mandir, Jai Vihar Colony, Masudabad, Najafgarh, New Delhi, Delhi 110043.",
     phone:     "9217371207",
     email:     "sm.najafgarh@garudtata.com",
     hours:     "10 AM – 7 PM · All Days",
