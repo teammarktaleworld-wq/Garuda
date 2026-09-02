@@ -1,25 +1,18 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-
 import PageLoaderWrapper from "./components/PageLoaderWrapper";
-
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Garud Tata | Authorized Tata Motors Dealer | Palam, New Delhi",
-
   description:
     "Garud Tata — Authorized Tata Motors dealership in Palam, New Delhi. Explore the full Tata Motors range: Harrier, Safari, Nexon, Punch, Curvv, Sierra, Tiago, Altroz. Book a test drive today.",
-
   keywords:
     "Garud Tata, Tata Motors showroom Delhi, Tata showroom Palam, Tata cars Delhi, Tata dealer Delhi, Tata Harrier Delhi, Tata Safari Delhi, Tata Nexon Delhi",
-
   openGraph: {
     title: "Garud Tata | Authorized Tata Motors Dealer",
-
     description:
       "Experience the full Tata Motors range at Garud Tata, Palam, New Delhi.",
-
     type: "website",
   },
 };
@@ -34,10 +27,10 @@ export default function RootLayout({
       <head>
         {/* =========================================================
             GOOGLE TAG MANAGER
-            Container ID: GTM-NHLJX4T8
+            Container ID: GTM-N887GC9J
         ========================================================= */}
 
-        <Script id="google-tag-manager" strategy="afterInteractive">
+        <Script id="google-tag-manager" strategy="beforeInteractive">
           {`
             (function(w,d,s,l,i){
               w[l]=w[l]||[];
@@ -45,16 +38,14 @@ export default function RootLayout({
                 'gtm.start': new Date().getTime(),
                 event:'gtm.js'
               });
-
               var f=d.getElementsByTagName(s)[0],
                   j=d.createElement(s),
-                  dl=l!='dataLayer' ? '&l='+l : '';
+                  dl=l!='dataLayer'?'&l='+l:'';
 
               j.async=true;
               j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
-
               f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-NHLJX4T8');
+            })(window,document,'script','dataLayer','GTM-N887GC9J');
           `}
         </Script>
 
@@ -134,20 +125,18 @@ export default function RootLayout({
 
       <body className="bg-[#050A12] antialiased">
         {/* =========================================================
-            GOOGLE TAG MANAGER - NOSCRIPT
-            Container ID: GTM-NHLJX4T8
+            GOOGLE TAG MANAGER NOSCRIPT
         ========================================================= */}
 
         <noscript>
           <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-NHLJX4T8"
+            src="https://www.googletagmanager.com/ns.html?id=GTM-N887GC9J"
             height="0"
             width="0"
             style={{
               display: "none",
               visibility: "hidden",
             }}
-            title="Google Tag Manager"
           />
         </noscript>
 
