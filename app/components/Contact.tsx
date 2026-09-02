@@ -1,47 +1,23 @@
-
-
-
-
-
-
-
-
-
-
 "use client";
 
 import {
-  useRef, useState, useCallback, type FormEvent, type ReactNode,
+  useRef, useState, useCallback, useEffect, type FormEvent, type ReactNode,
 } from "react";
 import {
   motion, useInView, useReducedMotion, AnimatePresence,
 } from "framer-motion";
 import {
   Phone, Mail, Car, Wrench, MessageSquare, Star,
-  ArrowRight, Loader2, CheckCircle2, Building2, AlertCircle,
+  ArrowRight, Loader2, CheckCircle2, Building2, AlertCircle, CalendarCheck,
 } from "lucide-react";
-
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-  }
-}
-
-function trackFormConversion() {
-  window.gtag?.("event", "conversion", {
-    send_to: "AW-18209967669/BPu-CPPRseocELWcmOtD",
-    value: 1.0,
-    currency: "INR",
-  });
-}
 
 /* ══════════════════════════════════════════════════════════════════════
    CONSTANTS
 ══════════════════════════════════════════════════════════════════════ */
-const SALES_PHONE  = "+91 92173 71211";
-const SALES_HREF   = "tel:+ +91 92173 71211";
-const CDM_EMAIL    = "cdm@garudtata.com";
-const SERVICE_EMAIL= "service@garudtata.com";
+const SALES_PHONE   = "+91 92173 71211";
+const SALES_HREF    = "tel:+919217371211";
+const CDM_EMAIL     = "cdm@garudtata.com";
+const SERVICE_EMAIL = "service@garudtata.com";
 
 const CARS = [
   "Tata Sierra", "Tata Harrier", "Tata Safari",
@@ -61,7 +37,7 @@ const WORKSHOPS = [
   "Garud Tata Service Centre, Najafgarh",
 ] as const;
 
-const ALL_OUTLETS  = [...OUTLETS, ...WORKSHOPS] as const;
+const ALL_OUTLETS = [...OUTLETS, ...WORKSHOPS] as const;
 
 const SERVICE_TYPES = [
   "Regular Service", "Accidental Repair", "Mechanical Repair",
@@ -71,13 +47,14 @@ const SERVICE_TYPES = [
 /* ══════════════════════════════════════════════════════════════════════
    TABS
 ══════════════════════════════════════════════════════════════════════ */
-type TabId = "enquiry" | "service" | "complaint" | "feedback";
+type TabId = "enquiry" | "testdrive" | "service" | "complaint" | "feedback";
 
 const TABS: { id: TabId; label: string; icon: typeof Car }[] = [
   { id: "enquiry",   label: "Car Enquiry",          icon: Car },
-  { id: "service",   label: "Service Booking",      icon: Wrench },
-  { id: "complaint", label: "Complaints / Queries", icon: MessageSquare },
-  { id: "feedback",  label: "Feedback",             icon: Star },
+  { id: "testdrive", label: "Test Drive",            icon: CalendarCheck },
+  { id: "service",   label: "Service Booking",       icon: Wrench },
+  { id: "complaint", label: "Complaints / Queries",  icon: MessageSquare },
+  { id: "feedback",  label: "Feedback",              icon: Star },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -207,14 +184,30 @@ function SubmitBtn({ loading, label = "Submit" }: { loading: boolean; label?: st
 }
 
 /* ══════════════════════════════════════════════════════════════════════
+   ERROR MSG
+══════════════════════════════════════════════════════════════════════ */
+function ErrorMsg({ children }: { children: ReactNode }) {
+  return (
+    <motion.p
+      initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+      role="alert"
+      className="flex items-center gap-2 text-red-400 text-[12.5px] leading-snug"
+    >
+      <AlertCircle size={13} className="flex-shrink-0" />
+      {children}
+    </motion.p>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
    FORM 1 — CAR ENQUIRY
 ══════════════════════════════════════════════════════════════════════ */
 function CarEnquiryForm() {
   const init = { name: "", email: "", mobile: "", model: "", outlet: "" };
   const [form, setForm] = useState(init);
-  const [loading,   setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [error,     setError]     = useState("");
+  const [error, setError] = useState("");
 
   const set = (k: keyof typeof form) => (v: string) =>
     setForm((p) => ({ ...p, [k]: v }));
@@ -223,10 +216,10 @@ function CarEnquiryForm() {
     e.preventDefault();
     if (loading) return;
     setError("");
-    if (!form.name.trim())                           { setError("Please enter your name."); return; }
-    if (form.mobile.replace(/\D/g, "").length < 10)  { setError("Please enter a valid mobile number."); return; }
-    if (!form.model)                                 { setError("Please select a model."); return; }
-    if (!form.outlet)                                { setError("Please select an outlet."); return; }
+    if (!form.name.trim())                          { setError("Please enter your name."); return; }
+    if (form.mobile.replace(/\D/g, "").length < 10) { setError("Please enter a valid mobile number."); return; }
+    if (!form.model)                                { setError("Please select a model."); return; }
+    if (!form.outlet)                               { setError("Please select an outlet."); return; }
 
     setLoading(true);
     try {
@@ -236,10 +229,6 @@ function CarEnquiryForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
-
-      // Google Ads conversion — fires only after successful submission
-      trackFormConversion();
-
       setSubmitted(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -294,14 +283,14 @@ function CarEnquiryForm() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   FORM 2 — SERVICE BOOKING
+   FORM 2 — TEST DRIVE
 ══════════════════════════════════════════════════════════════════════ */
-function ServiceBookingForm() {
-  const init = { name: "", email: "", mobile: "", model: "", outlet: "", serviceType: "", date: "" };
+function TestDriveForm() {
+  const init = { name: "", email: "", mobile: "", model: "", outlet: "", date: "" };
   const [form, setForm] = useState(init);
-  const [loading,   setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [error,     setError]     = useState("");
+  const [error, setError] = useState("");
 
   const set = (k: keyof typeof form) => (v: string) =>
     setForm((p) => ({ ...p, [k]: v }));
@@ -315,11 +304,107 @@ function ServiceBookingForm() {
     e.preventDefault();
     if (loading) return;
     setError("");
-    if (!form.name.trim())                           { setError("Please enter your name."); return; }
-    if (form.mobile.replace(/\D/g, "").length < 10)  { setError("Please enter a valid mobile number."); return; }
-    if (!form.model)                                 { setError("Please select a model."); return; }
-    if (!form.outlet)                                { setError("Please select an outlet."); return; }
-    if (!form.serviceType)                           { setError("Please select a service type."); return; }
+    if (!form.name.trim())                          { setError("Please enter your name."); return; }
+    if (form.mobile.replace(/\D/g, "").length < 10) { setError("Please enter a valid mobile number."); return; }
+    if (!form.model)                                { setError("Please select a model."); return; }
+    if (!form.outlet)                               { setError("Please select an outlet."); return; }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/contact/testdrive", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
+      setSubmitted(true);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  }, [form, loading]);
+
+  if (submitted) return (
+    <SuccessState
+      message="Your test drive request has been received. We'll confirm your slot within 24 hours."
+      onReset={() => { setSubmitted(false); setForm(init); }}
+    />
+  );
+
+  return (
+    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <FieldLabel>Name *</FieldLabel>
+          <input type="text" required autoComplete="name" value={form.name}
+            onChange={(e) => set("name")(e.target.value)}
+            placeholder="Your full name" className={fieldCls} />
+        </div>
+        <div>
+          <FieldLabel>Email</FieldLabel>
+          <input type="email" autoComplete="email" value={form.email}
+            onChange={(e) => set("email")(e.target.value)}
+            placeholder="your@email.com" className={fieldCls} />
+        </div>
+      </div>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <FieldLabel>Mobile No. *</FieldLabel>
+          <input type="tel" required inputMode="numeric" autoComplete="tel" maxLength={15}
+            value={form.mobile} onChange={(e) => set("mobile")(e.target.value)}
+            placeholder="+91 00000 00000" className={fieldCls} />
+        </div>
+        <div>
+          <FieldLabel>Model *</FieldLabel>
+          <NativeSelect value={form.model} onChange={set("model")} options={CARS} placeholder="Select Model" />
+        </div>
+      </div>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <FieldLabel>Outlet *</FieldLabel>
+          <NativeSelect value={form.outlet} onChange={set("outlet")} options={OUTLETS} placeholder="Select Outlet" />
+        </div>
+        <div>
+          <FieldLabel>Preferred Date</FieldLabel>
+          <input type="date" min={minDate} value={form.date}
+            onChange={(e) => set("date")(e.target.value)}
+            className={`${fieldCls} text-white/70`} />
+        </div>
+      </div>
+      {error && <ErrorMsg>{error}</ErrorMsg>}
+      <SubmitBtn loading={loading} label="Book Test Drive" />
+    </form>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   FORM 3 — SERVICE BOOKING
+══════════════════════════════════════════════════════════════════════ */
+function ServiceBookingForm() {
+  const init = { name: "", email: "", mobile: "", model: "", outlet: "", serviceType: "", date: "" };
+  const [form, setForm] = useState(init);
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+
+  const set = (k: keyof typeof form) => (v: string) =>
+    setForm((p) => ({ ...p, [k]: v }));
+
+  const minDate = (() => {
+    const d = new Date(); d.setDate(d.getDate() + 1);
+    return d.toISOString().split("T")[0];
+  })();
+
+  const handleSubmit = useCallback(async (e: FormEvent) => {
+    e.preventDefault();
+    if (loading) return;
+    setError("");
+    if (!form.name.trim())                          { setError("Please enter your name."); return; }
+    if (form.mobile.replace(/\D/g, "").length < 10) { setError("Please enter a valid mobile number."); return; }
+    if (!form.model)                                { setError("Please select a model."); return; }
+    if (!form.outlet)                               { setError("Please select an outlet."); return; }
+    if (!form.serviceType)                          { setError("Please select a service type."); return; }
 
     setLoading(true);
     try {
@@ -329,9 +414,6 @@ function ServiceBookingForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
-
-      trackFormConversion();
-
       setSubmitted(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -398,14 +480,14 @@ function ServiceBookingForm() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   FORM 3 — COMPLAINTS / QUERIES
+   FORM 4 — COMPLAINTS / QUERIES
 ══════════════════════════════════════════════════════════════════════ */
 function ComplaintForm() {
   const init = { name: "", email: "", mobile: "", outlet: "", query: "" };
   const [form, setForm] = useState(init);
-  const [loading,   setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [error,     setError]     = useState("");
+  const [error, setError] = useState("");
 
   const set = (k: keyof typeof form) => (v: string) =>
     setForm((p) => ({ ...p, [k]: v }));
@@ -414,10 +496,10 @@ function ComplaintForm() {
     e.preventDefault();
     if (loading) return;
     setError("");
-    if (!form.name.trim())                           { setError("Please enter your name."); return; }
-    if (form.mobile.replace(/\D/g, "").length < 10)  { setError("Please enter your name."); return; }
-    if (!form.outlet)                                { setError("Please select an outlet."); return; }
-    if (!form.query.trim())                          { setError("Please describe your query."); return; }
+    if (!form.name.trim())                          { setError("Please enter your name."); return; }
+    if (form.mobile.replace(/\D/g, "").length < 10) { setError("Please enter a valid mobile number."); return; }
+    if (!form.outlet)                               { setError("Please select an outlet."); return; }
+    if (!form.query.trim())                         { setError("Please describe your query."); return; }
 
     setLoading(true);
     try {
@@ -427,9 +509,6 @@ function ComplaintForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
-
-      trackFormConversion();
-
       setSubmitted(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -487,14 +566,14 @@ function ComplaintForm() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   FORM 4 — FEEDBACK
+   FORM 5 — FEEDBACK
 ══════════════════════════════════════════════════════════════════════ */
 function FeedbackForm() {
   const init = { name: "", email: "", mobile: "", outlet: "", rating: 0, feedback: "" };
   const [form, setForm] = useState(init);
-  const [loading,   setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [error,     setError]     = useState("");
+  const [error, setError] = useState("");
 
   const set = (k: keyof typeof form) => (v: string | number) =>
     setForm((p) => ({ ...p, [k]: v }));
@@ -503,11 +582,11 @@ function FeedbackForm() {
     e.preventDefault();
     if (loading) return;
     setError("");
-    if (!form.name.trim())                           { setError("Please enter your name."); return; }
-    if (form.mobile.replace(/\D/g, "").length < 10)  { setError("Please enter a valid mobile number."); return; }
-    if (!form.outlet)                                { setError("Please select an outlet."); return; }
-    if (!form.rating)                                { setError("Please select a rating."); return; }
-    if (!form.feedback.trim())                       { setError("Please enter your feedback."); return; }
+    if (!form.name.trim())                          { setError("Please enter your name."); return; }
+    if (form.mobile.replace(/\D/g, "").length < 10) { setError("Please enter a valid mobile number."); return; }
+    if (!form.outlet)                               { setError("Please select an outlet."); return; }
+    if (!form.rating)                               { setError("Please select a rating."); return; }
+    if (!form.feedback.trim())                      { setError("Please enter your feedback."); return; }
 
     setLoading(true);
     try {
@@ -517,9 +596,6 @@ function FeedbackForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error ?? "Submission failed.");
-
-      trackFormConversion();
-
       setSubmitted(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -581,28 +657,11 @@ function FeedbackForm() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   ERROR MSG
-══════════════════════════════════════════════════════════════════════ */
-function ErrorMsg({ children }: { children: ReactNode }) {
-  return (
-    <motion.p
-      initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
-      role="alert"
-      className="flex items-center gap-2 text-red-400 text-[12.5px] leading-snug"
-    >
-      <AlertCircle size={13} className="flex-shrink-0" />
-      {children}
-    </motion.p>
-  );
-}
-
-/* ══════════════════════════════════════════════════════════════════════
    CONTACT INFO SIDEBAR
 ══════════════════════════════════════════════════════════════════════ */
 function ContactSidebar() {
   return (
     <div className="space-y-3">
-      {/* Sales phone */}
       <a
         href={SALES_HREF}
         className="group flex items-center gap-4 p-4 sm:p-5 bg-[#102030] border border-white/[0.07] rounded-2xl hover:border-[#0055A5]/40 hover:bg-[#0055A5]/[0.08] transition-all duration-200"
@@ -616,7 +675,6 @@ function ContactSidebar() {
         </div>
       </a>
 
-      {/* CDM email */}
       <a
         href={`mailto:${CDM_EMAIL}`}
         className="group flex items-center gap-4 p-4 sm:p-5 bg-[#102030] border border-white/[0.07] rounded-2xl hover:border-[#0055A5]/40 hover:bg-[#0055A5]/[0.08] transition-all duration-200"
@@ -630,7 +688,6 @@ function ContactSidebar() {
         </div>
       </a>
 
-      {/* Service email */}
       <a
         href={`mailto:${SERVICE_EMAIL}`}
         className="group flex items-center gap-4 p-4 sm:p-5 bg-[#102030] border border-white/[0.07] rounded-2xl hover:border-amber-500/30 hover:bg-amber-500/[0.05] transition-all duration-200"
@@ -644,10 +701,8 @@ function ContactSidebar() {
         </div>
       </a>
 
-      {/* Divider */}
       <div className="h-px bg-white/[0.06] my-1" />
 
-      {/* Quick links */}
       <a
         href="#showroom"
         className="flex items-center justify-between gap-3 px-5 py-3.5 min-h-[48px] rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] hover:border-white/[0.16] text-white/60 hover:text-white font-semibold text-[12.5px] tracking-[0.05em] transition-all duration-150 group"
@@ -658,9 +713,9 @@ function ContactSidebar() {
         </span>
         <ArrowRight size={13} className="text-white/25 group-hover:translate-x-0.5 transition-transform" />
       </a>
+
       <a
         href="#showroom"
-        onClick={() => {/* could dispatch a tab-switch event */}}
         className="flex items-center justify-between gap-3 px-5 py-3.5 min-h-[48px] rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] hover:border-white/[0.16] text-white/60 hover:text-white font-semibold text-[12.5px] tracking-[0.05em] transition-all duration-150 group"
       >
         <span className="flex items-center gap-2.5">
@@ -687,8 +742,25 @@ export default function Contact() {
 
   const [activeTab, setActiveTab] = useState<TabId>("enquiry");
 
+  /* ── Listen for tab-switch events dispatched by OfferHero / other
+        components via: window.dispatchEvent(new CustomEvent(
+          "garud:select-contact-tab", { detail: "testdrive" }
+        ))
+  ── */
+  useEffect(() => {
+    function handleTabSwitch(e: Event) {
+      const tab = (e as CustomEvent<string>).detail as TabId;
+      if (TABS.some((t) => t.id === tab)) {
+        setActiveTab(tab);
+      }
+    }
+    window.addEventListener("garud:select-contact-tab", handleTabSwitch);
+    return () => window.removeEventListener("garud:select-contact-tab", handleTabSwitch);
+  }, []);
+
   const FORM_MAP: Record<TabId, ReactNode> = {
     enquiry:   <CarEnquiryForm />,
+    testdrive: <TestDriveForm />,
     service:   <ServiceBookingForm />,
     complaint: <ComplaintForm />,
     feedback:  <FeedbackForm />,
@@ -738,7 +810,7 @@ export default function Contact() {
             transition={{ delay: 0.16 }}
             className="text-white/40 text-[14px] sm:text-[15px] max-w-md mx-auto leading-relaxed"
           >
-            Reach out for a car enquiry, service booking, complaint, or share your feedback.
+            Reach out for a car enquiry, test drive, service booking, complaint, or share your feedback.
           </motion.p>
         </div>
 
