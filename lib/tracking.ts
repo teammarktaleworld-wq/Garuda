@@ -1,89 +1,43 @@
-// // lib/tracking.ts
-
 // /**
 //  * Google Tag Manager / Data Layer tracking utilities
 //  *
 //  * Flow:
-//  * Next.js → dataLayer → GTM → GA4 / Google Ads
+//  *
+//  * Next.js
+//  *    ↓
+//  * dataLayer
+//  *    ↓
+//  * Google Tag Manager
+//  *    ↓
+//  * GA4 / Google Ads
 //  */
 
-// declare global {
-//   interface Window {
-//     dataLayer: Array<Record<string, unknown>>;
-//   }
-// }
+// // =========================================================
+// // GENERIC DATA LAYER HELPER
+// // =========================================================
 
-// /**
-//  * Push an event to Google Tag Manager dataLayer.
-//  */
 // function pushToDataLayer(
 //   event: string,
 //   parameters: Record<string, unknown> = {}
 // ): void {
 //   if (typeof window === "undefined") return;
 
-//   window.dataLayer = window.dataLayer || [];
+//   const w = window as typeof window & {
+//     dataLayer?: Array<Record<string, unknown>>;
+//   };
 
-//   window.dataLayer.push({
+//   w.dataLayer = w.dataLayer || [];
+
+//   w.dataLayer.push({
 //     event,
 //     ...parameters,
 //   });
 // }
 
-// /**
-//  * Generic event
-//  */
-// export function trackEvent(
-//   eventName: string,
-//   parameters: Record<string, unknown> = {}
-// ): void {
-//   pushToDataLayer(eventName, parameters);
-// }
-
-// /* =========================================================
-//    CTA / BUTTON TRACKING
-// ========================================================= */
-
-// /**
-//  * Track CTA button clicks.
-//  *
-//  * Example:
-//  * trackCTA("Get Offer", "hero");
-//  */
-// export function trackCTA(
-//   ctaName: string,
-//   location = "unknown"
-// ): void {
-//   pushToDataLayer("cta_click", {
-//     cta_name: ctaName,
-//     location,
-//   });
-// }
-
-// /* =========================================================
-//    PHONE TRACKING
-// ========================================================= */
-
-// /**
-//  * Track phone/call clicks.
-//  *
-//  * Event:
-//  * phone_click
-//  */
-// export function trackPhoneClick(
-//   location = "unknown"
-// ): void {
-//   pushToDataLayer("phone_click", {
-//     location,
-//   });
-// }
-
-// /**
-//  * Backward-compatible call event.
-//  *
-//  * Your existing navbar currently uses:
-//  * call_click
-//  */
+// // =========================================================
+// // NAVBAR - CALL
+// // =========================================================
+// // this is common for landing page and / page 
 // export function trackCallClick(
 //   location = "unknown"
 // ): void {
@@ -92,27 +46,10 @@
 //   });
 // }
 
-// /**
-//  * Track copying the phone number.
-//  */
-// export function trackCopyPhone(
-//   location = "unknown"
-// ): void {
-//   pushToDataLayer("copy_phone", {
-//     location,
-//   });
-// }
+// // =========================================================
+// // NAVBAR - WHATSAPP
+// // =========================================================
 
-// /* =========================================================
-//    WHATSAPP TRACKING
-// ========================================================= */
-
-// /**
-//  * Track WhatsApp clicks.
-//  *
-//  * Example:
-//  * trackWhatsAppClick("header");
-//  */
 // export function trackWhatsAppClick(
 //   location = "unknown"
 // ): void {
@@ -121,204 +58,306 @@
 //   });
 // }
 
-// /* =========================================================
-//    EMAIL TRACKING
-// ========================================================= */
+// // =========================================================
+// // NAVBAR - COPY PHONE
+// // =========================================================
 
-// /**
-//  * Track email clicks.
-//  */
-// export function trackEmailClick(
+// export function trackCopyPhone(
 //   location = "unknown"
 // ): void {
-//   pushToDataLayer("email_click", {
+//   pushToDataLayer("copy_phone", {
 //     location,
 //   });
 // }
 
-// /* =========================================================
-//    FORM TRACKING
-// ========================================================= */
+// // =========================================================
+// // CAR ENQUIRY SUBMISSION
+// // =========================================================
+// // this is for landing page 
+// export function trackEnquirySubmit(
+//   model?: string
+// ): void {
+//   pushToDataLayer("enquiry_submit", {
+//     model_name: model || "unknown",
+//   });
+// }
+
+// // =========================================================
+// // TEST DRIVE SUBMISSION
+// // =========================================================
+// // this is for landing page 
+
+// export function trackTestDriveSubmit(
+//   model?: string
+// ): void {
+//   pushToDataLayer("test_drive_submit", {
+//     model_name: model || "unknown",
+//   });
+// }
+
+// // =========================================================
+// // HERO - GET OFFER CTA CLICK
+// // =========================================================
+// //this is for offerhero
+// export function trackGetOfferClick(
+//   location = "unknown"
+// ): void {
+//   pushToDataLayer("get_offer_click", {
+//     location,
+//   });
+// }
+
+// // =========================================================
+// // HERO - BOOK TEST DRIVE CTA CLICK
+// // =========================================================
+// // this is for offerhero 
+
+// export function trackBookTestDriveClick(
+//   location = "unknown"
+// ): void {
+//   pushToDataLayer("book_test_drive_click", {
+//     location,
+//   });
+// }
+
+// // =========================================================
+// // OFFERS FORM - GOOGLE ADS CONVERSION
+// // =========================================================
+// // this is for offers.tsx form submissions (Offer Enquiry / Test Drive)
+// // fires via GTM dataLayer, same pattern as call/whatsapp/copy tracking above
+
+// export function trackOfferFormConversion(
+//   model?: string,
+//   enquiryType?: string
+// ): void {
+//   pushToDataLayer("conversion", {
+//     send_to: "AW-18209967669/lusxCJrosuocELWcmOtD",
+//     value: 1.0,
+//     currency: "INR",
+//     model_name: model || "unknown",
+//     enquiry_type: enquiryType || "unknown",
+//   });
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // /**
-//  * Generic form submission.
+//  * Google Tag Manager / Data Layer tracking utilities
 //  *
-//  * Example:
-//  * trackFormSubmission("contact_form");
+//  * Flow:
+//  *
+//  * Next.js
+//  *    ↓
+//  * dataLayer
+//  *    ↓
+//  * Google Tag Manager
+//  *    ↓
+//  * GA4 / Google Ads
 //  */
-// export function trackFormSubmission(
-//   formName: string,
+
+// // =========================================================
+// // GENERIC DATA LAYER HELPER
+// // =========================================================
+
+// function pushToDataLayer(
+//   event: string,
 //   parameters: Record<string, unknown> = {}
 // ): void {
-//   pushToDataLayer("form_submit", {
-//     form_name: formName,
+//   if (typeof window === "undefined") return;
+
+//   const w = window as typeof window & {
+//     dataLayer?: Array<Record<string, unknown>>;
+//   };
+
+//   w.dataLayer = w.dataLayer || [];
+
+//   w.dataLayer.push({
+//     event,
 //     ...parameters,
 //   });
 // }
 
-// /**
-//  * Test drive form submission.
-//  */
-// export function trackTestDriveSubmit(
-//   modelName?: string
-// ): void {
-//   pushToDataLayer("test_drive_submit", {
-//     model_name: modelName || "unknown",
-//   });
-// }
-
-// /**
-//  * Offer enquiry form submission.
-//  */
-// export function trackOfferEnquirySubmit(
-//   modelName?: string
-// ): void {
-//   pushToDataLayer("offer_enquiry_submit", {
-//     model_name: modelName || "unknown",
-//   });
-// }
-
-// /**
-//  * Contact form submission.
-//  */
-// export function trackContactFormSubmit(): void {
-//   pushToDataLayer("contact_form_submit");
-// }
-
-// /**
-//  * General enquiry submission.
-//  */
-// export function trackEnquirySubmit(
-//   modelName?: string
-// ): void {
-//   pushToDataLayer("enquiry_submit", {
-//     model_name: modelName || "unknown",
-//   });
-// }
-
-// /**
-//  * Feedback form submission.
-//  */
-// export function trackFeedbackSubmit(): void {
-//   pushToDataLayer("feedback_submit");
-// }
-
-// /**
-//  * Callback request.
-//  */
-// export function trackCallbackRequest(): void {
-//   pushToDataLayer("callback_request");
-// }
-
-// /* =========================================================
-//    CAR / PRODUCT TRACKING
-// ========================================================= */
-
-// /**
-//  * Track viewing a specific car model.
-//  *
-//  * Example:
-//  * trackCarModelView("Nexon");
-//  */
-// export function trackCarModelView(
-//   modelName: string
-// ): void {
-//   pushToDataLayer("car_model_view", {
-//     model_name: modelName,
-//   });
-// }
-
-// /**
-//  * Track selecting a car model.
-//  */
-// export function trackCarModelSelect(
-//   modelName: string
-// ): void {
-//   pushToDataLayer("car_model_select", {
-//     model_name: modelName,
-//   });
-// }
-
-// /* =========================================================
-//    BROCHURE / DOCUMENT TRACKING
-// ========================================================= */
-
-// /**
-//  * Track brochure downloads.
-//  */
-// export function trackBrochureDownload(
-//   modelName?: string
-// ): void {
-//   pushToDataLayer("brochure_download", {
-//     model_name: modelName || "unknown",
-//   });
-// }
-
-// /* =========================================================
-//    EXTERNAL LINKS
-// ========================================================= */
-
-// /**
-//  * Track external link clicks.
-//  */
-// export function trackExternalLink(
-//   url: string,
+// // =========================================================
+// // NAVBAR - CALL
+// // =========================================================
+// // this is common for landing page and / page 
+// export function trackCallClick(
 //   location = "unknown"
 // ): void {
-//   pushToDataLayer("external_link_click", {
-//     url,
+//   pushToDataLayer("call_click", {
 //     location,
 //   });
 // }
 
-// /* =========================================================
-//    SHOWROOM TRACKING
-// ========================================================= */
+// // =========================================================
+// // NAVBAR - WHATSAPP
+// // =========================================================
 
-// /**
-//  * Track showroom selection.
-//  *
-//  * Example:
-//  * trackShowroomClick("Garud Tata Palam");
-//  */
-// export function trackShowroomClick(
-//   showroomName: string
+// export function trackWhatsAppClick(
+//   location = "unknown"
 // ): void {
-//   pushToDataLayer("showroom_click", {
-//     showroom_name: showroomName,
+//   pushToDataLayer("whatsapp_click", {
+//     location,
 //   });
 // }
 
-// /* =========================================================
-//    NAVIGATION TRACKING
-// ========================================================= */
+// // =========================================================
+// // NAVBAR - COPY PHONE
+// // =========================================================
 
-// /**
-//  * Track navigation menu clicks.
-//  *
-//  * Example:
-//  * trackNavigationClick("Offers");
-//  */
-// export function trackNavigationClick(
-//   linkName: string
+// export function trackCopyPhone(
+//   location = "unknown"
 // ): void {
-//   pushToDataLayer("navigation_click", {
-//     link_name: linkName,
+//   pushToDataLayer("copy_phone", {
+//     location,
 //   });
 // }
 
-// /* =========================================================
-//    SEARCH TRACKING
-// ========================================================= */
-
-// /**
-//  * Track website searches.
-//  */
-// export function trackSearch(
-//   searchTerm: string
+// // =========================================================
+// // CAR ENQUIRY SUBMISSION
+// // =========================================================
+// // this is for landing page + contact page (Car Enquiry tab)
+// export function trackEnquirySubmit(
+//   model?: string
 // ): void {
-//   pushToDataLayer("search", {
-//     search_term: searchTerm,
+//   pushToDataLayer("enquiry_submit", {
+//     model_name: model || "unknown",
+//   });
+// }
+
+// // =========================================================
+// // TEST DRIVE SUBMISSION
+// // =========================================================
+// // this is for landing page + contact page (Test Drive tab)
+
+// export function trackTestDriveSubmit(
+//   model?: string
+// ): void {
+//   pushToDataLayer("test_drive_submit", {
+//     model_name: model || "unknown",
+//   });
+// }
+
+// // =========================================================
+// // SERVICE BOOKING SUBMISSION
+// // =========================================================
+// // this is for contact page (Service Booking tab)
+
+// export function trackServiceBookingSubmit(
+//   model?: string,
+//   serviceType?: string
+// ): void {
+//   pushToDataLayer("service_booking_submit", {
+//     model_name: model || "unknown",
+//     service_type: serviceType || "unknown",
+//   });
+// }
+
+// // =========================================================
+// // COMPLAINT / QUERY SUBMISSION
+// // =========================================================
+// // this is for contact page (Complaints / Queries tab)
+
+// export function trackComplaintSubmit(
+//   outlet?: string
+// ): void {
+//   pushToDataLayer("complaint_submit", {
+//     outlet_name: outlet || "unknown",
+//   });
+// }
+
+// // =========================================================
+// // FEEDBACK SUBMISSION
+// // =========================================================
+// // this is for contact page (Feedback tab)
+
+// export function trackFeedbackSubmit(
+//   outlet?: string,
+//   rating?: number
+// ): void {
+//   pushToDataLayer("feedback_submit", {
+//     outlet_name: outlet || "unknown",
+//     rating: rating ?? 0,
+//   });
+// }
+
+// // =========================================================
+// // HERO - GET OFFER CTA CLICK
+// // =========================================================
+// //this is for offerhero
+// export function trackGetOfferClick(
+//   location = "unknown"
+// ): void {
+//   pushToDataLayer("get_offer_click", {
+//     location,
+//   });
+// }
+
+// // =========================================================
+// // HERO - BOOK TEST DRIVE CTA CLICK
+// // =========================================================
+// // this is for offerhero 
+
+// export function trackBookTestDriveClick(
+//   location = "unknown"
+// ): void {
+//   pushToDataLayer("book_test_drive_click", {
+//     location,
+//   });
+// }
+
+// // =========================================================
+// // OFFERS FORM - GOOGLE ADS CONVERSION
+// // =========================================================
+// // this is for offers.tsx form submissions (Offer Enquiry / Test Drive)
+// // fires via GTM dataLayer, same pattern as call/whatsapp/copy tracking above
+
+// export function trackOfferFormConversion(
+//   model?: string,
+//   enquiryType?: string
+// ): void {
+//   pushToDataLayer("conversion", {
+//     send_to: "AW-18209967669/lusxCJrosuocELWcmOtD",
+//     value: 1.0,
+//     currency: "INR",
+//     model_name: model || "unknown",
+//     enquiry_type: enquiryType || "unknown",
+//   });
+// }
+
+// // =========================================================
+// // CONTACT PAGE FORMS - GOOGLE ADS CONVERSION
+// // =========================================================
+// // this is for contact.tsx form submissions (all 5 tabs)
+// // fires via GTM dataLayer, same pattern as trackOfferFormConversion above
+// // formType examples: "enquiry" | "testdrive" | "service" | "complaint" | "feedback"
+
+// export function trackContactFormConversion(
+//   formType: string,
+//   detail?: string
+// ): void {
+//   pushToDataLayer("conversion", {
+//     send_to: "AW-18209967669/lusxCJrosuocELWcmOtD",
+//     value: 1.0,
+//     currency: "INR",
+//     form_type: formType,
+//     detail: detail || "unknown",
 //   });
 // }
 
@@ -334,24 +373,25 @@
 
 
 
-
-// lib/tracking.ts
 
 /**
  * Google Tag Manager / Data Layer tracking utilities
  *
  * Flow:
- * Next.js → dataLayer → GTM → GA4 / Google Ads
+ *
+ * Next.js
+ *    ↓
+ * dataLayer
+ *    ↓
+ * Google Tag Manager
+ *    ↓
+ * GA4 / Google Ads
  */
 
-/**
- * Push an event to Google Tag Manager dataLayer.
- *
- * We intentionally type dataLayer locally instead of
- * extending Window globally. This prevents TypeScript
- * declaration conflicts with other files/libraries that
- * may already define window.dataLayer.
- */
+// =========================================================
+// GENERIC DATA LAYER HELPER
+// =========================================================
+
 function pushToDataLayer(
   event: string,
   parameters: Record<string, unknown> = {}
@@ -370,69 +410,10 @@ function pushToDataLayer(
   });
 }
 
-/* =========================================================
-   GENERIC EVENT TRACKING
-========================================================= */
-
-/**
- * Generic event.
- *
- * Example:
- * trackEvent("page_view_custom", {
- *   page_name: "Landing Page",
- * });
- */
-export function trackEvent(
-  eventName: string,
-  parameters: Record<string, unknown> = {}
-): void {
-  pushToDataLayer(eventName, parameters);
-}
-
-/* =========================================================
-   CTA / BUTTON TRACKING
-========================================================= */
-
-/**
- * Track CTA button clicks.
- *
- * Example:
- * trackCTA("Get Offer", "hero");
- */
-export function trackCTA(
-  ctaName: string,
-  location = "unknown"
-): void {
-  pushToDataLayer("cta_click", {
-    cta_name: ctaName,
-    location,
-  });
-}
-
-/* =========================================================
-   PHONE TRACKING
-========================================================= */
-
-/**
- * Track phone/call clicks.
- *
- * Event:
- * phone_click
- */
-export function trackPhoneClick(
-  location = "unknown"
-): void {
-  pushToDataLayer("phone_click", {
-    location,
-  });
-}
-
-/**
- * Backward-compatible call event.
- *
- * Existing components may use:
- * trackCallClick()
- */
+// =========================================================
+// NAVBAR - CALL
+// =========================================================
+// this is common for landing page and / page 
 export function trackCallClick(
   location = "unknown"
 ): void {
@@ -441,27 +422,10 @@ export function trackCallClick(
   });
 }
 
-/**
- * Track copying the phone number.
- */
-export function trackCopyPhone(
-  location = "unknown"
-): void {
-  pushToDataLayer("copy_phone", {
-    location,
-  });
-}
+// =========================================================
+// NAVBAR - WHATSAPP
+// =========================================================
 
-/* =========================================================
-   WHATSAPP TRACKING
-========================================================= */
-
-/**
- * Track WhatsApp clicks.
- *
- * Example:
- * trackWhatsAppClick("header");
- */
 export function trackWhatsAppClick(
   location = "unknown"
 ): void {
@@ -470,248 +434,147 @@ export function trackWhatsAppClick(
   });
 }
 
-/* =========================================================
-   EMAIL TRACKING
-========================================================= */
+// =========================================================
+// NAVBAR - COPY PHONE
+// =========================================================
 
-/**
- * Track email clicks.
- */
-export function trackEmailClick(
+export function trackCopyPhone(
   location = "unknown"
 ): void {
-  pushToDataLayer("email_click", {
+  pushToDataLayer("copy_phone", {
     location,
   });
 }
 
-/* =========================================================
-   FORM TRACKING
-========================================================= */
-
-/**
- * Generic form submission.
- *
- * Example:
- * trackFormSubmission("contact_form");
- */
-export function trackFormSubmission(
-  formName: string,
-  parameters: Record<string, unknown> = {}
-): void {
-  pushToDataLayer("form_submit", {
-    form_name: formName,
-    ...parameters,
-  });
-}
-
-/**
- * Test drive form submission.
- *
- * GTM Event:
- * test_drive_submit
- *
- * Data Layer:
- * {
- *   event: "test_drive_submit",
- *   model_name: "Tata Punch EV"
- * }
- */
-export function trackTestDriveSubmit(
-  modelName?: string
-): void {
-  pushToDataLayer("test_drive_submit", {
-    model_name: modelName || "unknown",
-  });
-}
-
-/**
- * Offer enquiry form submission.
- *
- * GTM Event:
- * offer_enquiry_submit
- */
-export function trackOfferEnquirySubmit(
-  modelName?: string
-): void {
-  pushToDataLayer("offer_enquiry_submit", {
-    model_name: modelName || "unknown",
-  });
-}
-
-/**
- * Contact form submission.
- *
- * GTM Event:
- * contact_form_submit
- */
-export function trackContactFormSubmit(): void {
-  pushToDataLayer("contact_form_submit");
-}
-
-/**
- * General enquiry submission.
- *
- * GTM Event:
- * enquiry_submit
- *
- * Data Layer:
- * {
- *   event: "enquiry_submit",
- *   model_name: "Tata Punch EV"
- * }
- */
+// =========================================================
+// CAR ENQUIRY SUBMISSION
+// =========================================================
+// this is for landing page + contact page (Car Enquiry tab) + offer detail page
 export function trackEnquirySubmit(
-  modelName?: string
+  model?: string
 ): void {
   pushToDataLayer("enquiry_submit", {
-    model_name: modelName || "unknown",
+    model_name: model || "unknown",
   });
 }
 
-/**
- * Feedback form submission.
- *
- * GTM Event:
- * feedback_submit
- */
-export function trackFeedbackSubmit(): void {
-  pushToDataLayer("feedback_submit");
-}
+// =========================================================
+// TEST DRIVE SUBMISSION
+// =========================================================
+// this is for landing page + contact page (Test Drive tab) + offer detail page
 
-/**
- * Callback request.
- *
- * GTM Event:
- * callback_request
- */
-export function trackCallbackRequest(): void {
-  pushToDataLayer("callback_request");
-}
-
-/* =========================================================
-   CAR / PRODUCT TRACKING
-========================================================= */
-
-/**
- * Track viewing a specific car model.
- *
- * Example:
- * trackCarModelView("Tata Nexon");
- */
-export function trackCarModelView(
-  modelName: string
+export function trackTestDriveSubmit(
+  model?: string
 ): void {
-  pushToDataLayer("car_model_view", {
-    model_name: modelName,
+  pushToDataLayer("test_drive_submit", {
+    model_name: model || "unknown",
   });
 }
 
-/**
- * Track selecting a car model.
- *
- * Example:
- * trackCarModelSelect("Tata Punch EV");
- */
-export function trackCarModelSelect(
-  modelName: string
+// =========================================================
+// SERVICE BOOKING SUBMISSION
+// =========================================================
+// this is for contact page (Service Booking tab)
+
+export function trackServiceBookingSubmit(
+  model?: string,
+  serviceType?: string
 ): void {
-  pushToDataLayer("car_model_select", {
-    model_name: modelName,
+  pushToDataLayer("service_booking_submit", {
+    model_name: model || "unknown",
+    service_type: serviceType || "unknown",
   });
 }
 
-/* =========================================================
-   BROCHURE / DOCUMENT TRACKING
-========================================================= */
+// =========================================================
+// COMPLAINT / QUERY SUBMISSION
+// =========================================================
+// this is for contact page (Complaints / Queries tab)
 
-/**
- * Track brochure downloads.
- *
- * Example:
- * trackBrochureDownload("Tata Nexon");
- */
-export function trackBrochureDownload(
-  modelName?: string
+export function trackComplaintSubmit(
+  outlet?: string
 ): void {
-  pushToDataLayer("brochure_download", {
-    model_name: modelName || "unknown",
+  pushToDataLayer("complaint_submit", {
+    outlet_name: outlet || "unknown",
   });
 }
 
-/* =========================================================
-   EXTERNAL LINKS
-========================================================= */
+// =========================================================
+// FEEDBACK SUBMISSION
+// =========================================================
+// this is for contact page (Feedback tab)
 
-/**
- * Track external link clicks.
- *
- * Example:
- * trackExternalLink(
- *   "https://example.com",
- *   "footer"
- * );
- */
-export function trackExternalLink(
-  url: string,
+export function trackFeedbackSubmit(
+  outlet?: string,
+  rating?: number
+): void {
+  pushToDataLayer("feedback_submit", {
+    outlet_name: outlet || "unknown",
+    rating: rating ?? 0,
+  });
+}
+
+// =========================================================
+// HERO - GET OFFER CTA CLICK
+// =========================================================
+//this is for offerhero
+export function trackGetOfferClick(
   location = "unknown"
 ): void {
-  pushToDataLayer("external_link_click", {
-    url,
+  pushToDataLayer("get_offer_click", {
     location,
   });
 }
 
-/* =========================================================
-   SHOWROOM TRACKING
-========================================================= */
+// =========================================================
+// HERO - BOOK TEST DRIVE CTA CLICK
+// =========================================================
+// this is for offerhero 
 
-/**
- * Track showroom selection.
- *
- * Example:
- * trackShowroomClick("Garud Tata Palam");
- */
-export function trackShowroomClick(
-  showroomName: string
+export function trackBookTestDriveClick(
+  location = "unknown"
 ): void {
-  pushToDataLayer("showroom_click", {
-    showroom_name: showroomName,
+  pushToDataLayer("book_test_drive_click", {
+    location,
   });
 }
 
-/* =========================================================
-   NAVIGATION TRACKING
-========================================================= */
+// =========================================================
+// OFFERS FORM - GOOGLE ADS CONVERSION
+// =========================================================
+// this is for offers.tsx (landing page modal) AND offerenquiryform.tsx
+// (offer detail page form) submissions — Offer Enquiry / Test Drive / Get Offer
+// fires via GTM dataLayer, same pattern as call/whatsapp/copy tracking above
 
-/**
- * Track navigation menu clicks.
- *
- * Example:
- * trackNavigationClick("Offers");
- */
-export function trackNavigationClick(
-  linkName: string
+export function trackOfferFormConversion(
+  model?: string,
+  enquiryType?: string
 ): void {
-  pushToDataLayer("navigation_click", {
-    link_name: linkName,
+  pushToDataLayer("conversion", {
+    send_to: "AW-18209967669/lusxCJrosuocELWcmOtD",
+    value: 1.0,
+    currency: "INR",
+    model_name: model || "unknown",
+    enquiry_type: enquiryType || "unknown",
   });
 }
 
-/* =========================================================
-   SEARCH TRACKING
-========================================================= */
+// =========================================================
+// CONTACT PAGE FORMS - GOOGLE ADS CONVERSION
+// =========================================================
+// this is for contact.tsx form submissions (all 5 tabs)
+// fires via GTM dataLayer, same pattern as trackOfferFormConversion above
+// formType examples: "enquiry" | "testdrive" | "service" | "complaint" | "feedback"
 
-/**
- * Track website searches.
- *
- * Example:
- * trackSearch("Nexon");
- */
-export function trackSearch(
-  searchTerm: string
+export function trackContactFormConversion(
+  formType: string,
+  detail?: string
 ): void {
-  pushToDataLayer("search", {
-    search_term: searchTerm,
+  pushToDataLayer("conversion", {
+    send_to: "AW-18209967669/lusxCJrosuocELWcmOtD",
+    value: 1.0,
+    currency: "INR",
+    form_type: formType,
+    detail: detail || "unknown",
   });
 }
