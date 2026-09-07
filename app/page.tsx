@@ -88,12 +88,10 @@
 
 
 
-
-
 // app/page.tsx
 import LandingPage from "./components/LandingPage";
 import { showrooms } from "./config/showrooms";
 
 export default function Home() {
-  return <LandingPage showroom={showrooms.palam} />;
+  return <LandingPage showroom={showrooms["Tata-Motors-Palam"]} />;
 }
