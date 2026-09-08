@@ -1537,7 +1537,7 @@ const NAV_LINKS: NavLink[] = [
   { label: "Offers",    href: "#offers",  type: "hash",  hash: "offer-form" },
   { label: "Showrooms", href: "#showrooms", type: "hash", hash: "showrooms" },
   { label: "Service",   href: "#showrooms", type: "hash", hash: "showrooms" },
-  { label: "PR & Blogs", href: "/pr-blog", type: "route", hash: null },
+  { label: "PR & Blogs", href: "/blog", type: "route", hash: null },
   { label: "Contact",   href: "#contact", type: "hash",  hash: "contact" },
 ];
 
