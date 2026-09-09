@@ -50,37 +50,68 @@ const PHONE_TEL = "tel:+919217371211";
    Showrooms link to internal Next.js routes.
 ========================================================= */
 
+// const locations = [
+//   {
+//     name: "Palam Showroom",
+//     address: "Garg Plaza, RZ A70, Dabri–Palam Rd, New Delhi 110045",
+//     route: "/Tata-Motors-Palam",
+//     type: "showroom",
+//   },
+//   {
+//     name: "Narela Showroom",
+//     address: "Khasra No 42/12, Narela, New Delhi 110040",
+//     route: "/Tata-Motors-Narela",
+//     type: "showroom",
+//   },
+//   {
+//     name: "Najafgarh Showroom",
+//     address:
+//       "Plot No. 13, Najafgarh Rd, near Sai Baba Mandir, Jai Vihar Colony, Masudabad, Najafgarh, New Delhi 110043",
+//     route: "/Tata-Motors-Najafgarh",
+//     type: "showroom",
+//   },
+//   {
+//     name: "Dwarka Service Centre",
+//     address:
+//       "Shanti Garden, Matiala Ind. Area, Dwarka, New Delhi 110059",
+//     type: "service",
+//   },
+//   {
+//     name: "Najafgarh Service Centre",
+//     address:
+//       "Plot No. 8–11, Main Najafgarh Road, Near Sai Baba Mandir, Najafgarh, New Delhi 110043",
+//     type: "service",
+//   },
+// ];
+
 const locations = [
   {
-    name: "Palam Showroom",
+    name:    "Palam Showroom",
     address: "Garg Plaza, RZ A70, Dabri–Palam Rd, New Delhi 110045",
-    route: "/Tata-Motors-Palam",
-    type: "showroom",
+    route:   "/Tata-Motors-Palam-Dwarka",
+    type:    "showroom",
   },
   {
-    name: "Narela Showroom",
+    name:    "Narela Showroom",
     address: "Khasra No 42/12, Narela, New Delhi 110040",
-    route: "/Tata-Motors-Narela",
-    type: "showroom",
+    route:   "/Tata-Motors-Narela",
+    type:    "showroom",
   },
   {
-    name: "Najafgarh Showroom",
-    address:
-      "Plot No. 13, Najafgarh Rd, near Sai Baba Mandir, Jai Vihar Colony, Masudabad, Najafgarh, New Delhi 110043",
-    route: "/Tata-Motors-Najafgarh",
-    type: "showroom",
+    name:    "Najafgarh Showroom",
+    address: "Plot No. 13, Najafgarh Rd, near Sai Baba Mandir, Jai Vihar Colony, Masudabad, Najafgarh, New Delhi 110043",
+    route:   "/Tata-Motors-Najafgarh",
+    type:    "showroom",
   },
   {
-    name: "Dwarka Service Centre",
-    address:
-      "Shanti Garden, Matiala Ind. Area, Dwarka, New Delhi 110059",
-    type: "service",
+    name:    "Dwarka Service Centre",
+    address: "Shanti Garden, Matiala Ind. Area, Dwarka, New Delhi 110059",
+    type:    "service",
   },
   {
-    name: "Najafgarh Service Centre",
-    address:
-      "Plot No. 8–11, Main Najafgarh Road, Near Sai Baba Mandir, Najafgarh, New Delhi 110043",
-    type: "service",
+    name:    "Najafgarh Service Centre",
+    address: "Plot No. 8–11, Main Najafgarh Road, Near Sai Baba Mandir, Najafgarh, New Delhi 110043",
+    type:    "service",
   },
 ];
 
